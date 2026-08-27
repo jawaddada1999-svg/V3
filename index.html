@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>لوحة تحكم العقارات</title>
+<title>لوحة تحكم الوكالة العقارية</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -34,11 +34,8 @@
   .role-btn.active{ background:var(--navy); color:#fff; }
   .role-btn:not(.active){ background:#fff; color:var(--navy); border:1px solid var(--border); }
 
-  select.filter-select{
-    appearance:none; -webkit-appearance:none;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7A99' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat:no-repeat; background-position:left .75rem center; background-size:16px;
-  }
+  .tab-pill.active{ background:var(--navy); color:#fff; box-shadow:0 6px 16px -6px rgba(15,30,61,0.35); }
+  .tab-pill:not(.active){ background:#fff; color:var(--navy); border:1px solid var(--border); }
 
   table thead th{ position:sticky; top:0; background:#FAFBFF; z-index:5; color:var(--navy-soft); }
   tbody tr:hover{ background:#F7F9FF; }
@@ -58,7 +55,7 @@
   <div class="card rounded-2xl p-8 w-full max-w-sm fade-in">
     <div class="text-center mb-6">
       <div class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-3xl mx-auto mb-3">🏢</div>
-      <h1 class="text-xl font-black">لوحة تحكم العقارات</h1>
+      <h1 class="text-xl font-black">لوحة تحكم الوكالة العقارية</h1>
       <p class="text-xs text-gray-500 mt-1 font-semibold">اختر نوع الدخول للمتابعة</p>
     </div>
 
@@ -75,6 +72,7 @@
       <label class="text-xs font-bold text-gray-500 mb-1.5 block">كلمة السر</label>
       <input id="managerPassword" type="password" placeholder="••••••••"
         class="w-full border border-[var(--border)] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400">
+      <p class="text-[10px] text-gray-400 mt-1.5">كلمة السر ديال المدير مضبوطة فـ Script Properties (MANAGER_PASSWORD) فـ Apps Script.</p>
     </div>
 
     <button id="loginBtn" class="w-full bg-[var(--navy)] text-white font-black py-3 rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2">
@@ -86,119 +84,196 @@
   </div>
 </div>
 
-<!-- ===================== الداشبورد ===================== -->
-<div id="dashboardScreen" class="hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-
-  <!-- الشريط العلوي -->
-  <header class="pt-6 pb-5">
-    <div class="flex items-center justify-between mb-5">
-      <button id="refreshBtn" class="card w-11 h-11 rounded-full flex items-center justify-center shrink-0" style="color:var(--blue)" title="تحديث">
-        <i class="fa-solid fa-rotate-right text-sm" id="refreshIcon"></i>
-      </button>
-      <div class="text-center">
-        <h1 class="text-2xl sm:text-3xl font-black flex items-center justify-center gap-2" style="color:var(--navy)">
-          <span>📊</span><span>لوحة تحكم العقارات</span>
-        </h1>
-        <p id="roleLabel" class="text-[12px] mt-1 font-bold" style="color:var(--gray)"></p>
-      </div>
-      <button id="logoutBtn" class="card w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-red-500" title="خروج">
-        <i class="fa-solid fa-right-from-bracket text-sm"></i>
-      </button>
+<!-- ===================== واجهة الموظف ===================== -->
+<div id="employeeScreen" class="hidden max-w-4xl mx-auto px-4 sm:px-6 pb-16">
+  <header class="pt-6 pb-5 flex items-center justify-between">
+    <button id="logoutBtnEmp" class="card w-11 h-11 rounded-full flex items-center justify-center text-red-500" title="خروج">
+      <i class="fa-solid fa-right-from-bracket text-sm"></i>
+    </button>
+    <div class="text-center">
+      <h1 class="text-2xl font-black" style="color:var(--navy)"><span>📋</span> متابعة العملاء</h1>
+      <p class="text-[12px] mt-1 font-bold" style="color:var(--gray)">واجهة الموظف — Database</p>
     </div>
+    <button id="refreshBtnEmp" class="card w-11 h-11 rounded-full flex items-center justify-center" style="color:var(--blue)" title="تحديث">
+      <i class="fa-solid fa-rotate-right text-sm" id="refreshIconEmp"></i>
+    </button>
   </header>
 
-  <!-- الفلاتر والبحث -->
   <section class="card rounded-2xl p-4 mb-5 space-y-3">
     <div class="relative">
       <i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-sm" style="color:#9AA6BF"></i>
-      <input id="searchInput" type="text" placeholder="بحث بالاسم أو الهاتف..."
+      <input id="empSearchInput" type="text" placeholder="بحث بالاسم أو الهاتف..."
         class="w-full bg-[#F8FAFC] border border-[var(--border)] rounded-xl pr-10 pl-4 py-3 text-sm focus:outline-none focus:border-blue-400 transition" style="color:var(--navy)">
     </div>
-
-    <div>
-      <label class="text-[11px] font-bold mb-1.5 block" style="color:var(--gray)">الفترة الزمنية</label>
-      <select id="timeSelect" class="filter-select w-full bg-[#F8FAFC] border border-[var(--border)] rounded-xl pl-8 pr-3 py-2.5 text-sm font-bold focus:outline-none focus:border-blue-400" style="color:var(--navy)"></select>
-    </div>
-
-    <div>
-      <p class="text-[11px] font-bold mb-2" style="color:var(--gray)">فلتر سريع (التصنيف / الحالة)</p>
-      <div class="scroller flex gap-2 pb-1" id="quickChips"></div>
-    </div>
+    <div class="scroller flex gap-2 pb-1" id="empStatusChips"></div>
   </section>
 
-  <!-- خطأ -->
-  <div id="errorBanner" class="hidden bg-red-50 border border-red-200 rounded-2xl px-4 py-4 mb-5 flex items-start gap-3 fade-in">
+  <div id="empErrorBanner" class="hidden bg-red-50 border border-red-200 rounded-2xl px-4 py-4 mb-5 flex items-start gap-3 fade-in">
     <div class="icon-circle bg-red-100 text-red-500"><i class="fa-solid fa-triangle-exclamation text-sm"></i></div>
-    <span id="errorText" class="text-sm text-red-600 leading-relaxed pt-1.5">تعذر تحميل البيانات.</span>
+    <span id="empErrorText" class="text-sm text-red-600 leading-relaxed pt-1.5">تعذر تحميل البيانات.</span>
   </div>
 
-  <!-- تحميل -->
-  <div id="loadingState" class="card rounded-2xl p-5 mb-5">
+  <div id="empLoadingState" class="card rounded-2xl p-5 mb-5">
     <div class="skeleton h-10 w-full rounded-xl mb-2.5"></div>
     <div class="skeleton h-10 w-full rounded-xl mb-2.5"></div>
     <div class="skeleton h-10 w-full rounded-xl"></div>
   </div>
 
-  <!-- بطاقة إجمالي العملاء -->
-  <section id="totalCard" class="rounded-2xl p-5 mb-5 hidden fade-in" style="background:#16A34A; box-shadow:0 14px 32px -12px rgba(22,163,74,0.5);">
-    <div class="flex items-center justify-between">
-      <div class="icon-circle" style="background:rgba(255,255,255,0.2); font-size:26px; width:58px; height:58px;">👥</div>
-      <div class="text-right">
-        <p class="text-sm mb-1 font-black text-white">إجمالي العملاء</p>
-        <p class="text-4xl font-black text-white" id="totalCount">0</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- الرسوم البيانية -->
-  <section id="chartsWrap" class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5 hidden">
-    <div class="card rounded-2xl p-5">
-      <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-fire text-sm" style="color:var(--blue)"></i>التصنيف</h3>
-      <div class="h-60"><canvas id="chartClassification"></canvas></div>
-      <div id="legendClassification" class="mt-4 space-y-2.5"></div>
-    </div>
-    <div class="card rounded-2xl p-5">
-      <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-house text-sm" style="color:var(--blue)"></i>نوع العقار</h3>
-      <div class="h-60"><canvas id="chartPropertyType"></canvas></div>
-      <div id="legendPropertyType" class="mt-4 space-y-2.5"></div>
-    </div>
-    <div class="card rounded-2xl p-5">
-      <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-chart-simple text-sm" style="color:var(--blue)"></i>الحالة</h3>
-      <div class="h-60"><canvas id="chartStatus"></canvas></div>
-      <div id="legendStatus" class="mt-4 space-y-2.5"></div>
-    </div>
-  </section>
-
-  <!-- فارغ -->
-  <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center card rounded-2xl mb-5" style="color:var(--gray)">
+  <div id="empEmptyState" class="hidden flex-col items-center justify-center py-16 text-center card rounded-2xl mb-5" style="color:var(--gray)">
     <div class="text-4xl mb-3">🗂️</div>
     <p class="text-sm font-bold">لا توجد بيانات مطابقة</p>
   </div>
 
-  <!-- الجدول -->
-  <section id="tableWrap" class="card rounded-2xl overflow-hidden mb-5 hidden">
-    <div class="px-5 pt-5 pb-3">
-      <h3 class="text-base font-black" style="color:var(--navy)">نظرة عامة على العملاء</h3>
-    </div>
-    <div class="overflow-x-auto max-h-[500px]">
+  <section id="empTableWrap" class="card rounded-2xl overflow-hidden mb-5 hidden">
+    <div class="overflow-x-auto max-h-[560px]">
       <table class="w-full text-xs">
         <thead>
           <tr class="text-[10px] border-b" style="border-color:var(--border)">
             <th class="text-right px-4 py-3 font-black">العميل</th>
             <th class="text-right px-4 py-3 font-black">الهاتف</th>
-            <th class="text-right px-4 py-3 font-black">الميزانية</th>
             <th class="text-right px-4 py-3 font-black">النوع</th>
             <th class="text-right px-4 py-3 font-black">الحالة</th>
-            <th class="text-right px-4 py-3 font-black">التصنيف</th>
           </tr>
         </thead>
-        <tbody id="tableBody" class="divide-y" style="border-color:var(--border)"></tbody>
+        <tbody id="empTableBody" class="divide-y" style="border-color:var(--border)"></tbody>
       </table>
     </div>
   </section>
+</div>
+
+<!-- ===================== واجهة المدير ===================== -->
+<div id="managerScreen" class="hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+  <header class="pt-6 pb-5">
+    <div class="flex items-center justify-between mb-5">
+      <button id="refreshBtnMgr" class="card w-11 h-11 rounded-full flex items-center justify-center" style="color:var(--blue)" title="تحديث">
+        <i class="fa-solid fa-rotate-right text-sm" id="refreshIconMgr"></i>
+      </button>
+      <div class="text-center">
+        <h1 class="text-2xl sm:text-3xl font-black flex items-center justify-center gap-2" style="color:var(--navy)">
+          <span>👑</span><span>لوحة تحكم المدير الشاملة</span>
+        </h1>
+        <p class="text-[12px] mt-1 font-bold" style="color:var(--gray)">كل البيانات: PROJET01 + Valut</p>
+      </div>
+      <button id="logoutBtnMgr" class="card w-11 h-11 rounded-full flex items-center justify-center text-red-500" title="خروج">
+        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+      </button>
+    </div>
+
+    <nav class="flex flex-wrap gap-2" id="mgrTabsNav"></nav>
+  </header>
+
+  <div id="mgrErrorBanner" class="hidden bg-red-50 border border-red-200 rounded-2xl px-4 py-4 mb-5 flex items-start gap-3 fade-in">
+    <div class="icon-circle bg-red-100 text-red-500"><i class="fa-solid fa-triangle-exclamation text-sm"></i></div>
+    <span id="mgrErrorText" class="text-sm text-red-600 leading-relaxed pt-1.5">تعذر تحميل البيانات.</span>
+  </div>
+
+  <div id="mgrLoadingState" class="card rounded-2xl p-5 mb-5">
+    <div class="skeleton h-10 w-full rounded-xl mb-2.5"></div>
+    <div class="skeleton h-10 w-full rounded-xl mb-2.5"></div>
+    <div class="skeleton h-10 w-full rounded-xl"></div>
+  </div>
+
+  <!-- ===== تبويب: نظرة عامة ===== -->
+  <div id="mgrView-overview" class="mgr-view hidden">
+    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-5" id="mgrStatsGrid"></section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5">
+      <div class="card rounded-2xl p-5">
+        <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-fire text-sm" style="color:var(--blue)"></i>التصنيف</h3>
+        <div class="h-60"><canvas id="chartClassification"></canvas></div>
+        <div id="legendClassification" class="mt-4 space-y-2.5"></div>
+      </div>
+      <div class="card rounded-2xl p-5">
+        <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-sack-dollar text-sm" style="color:var(--blue)"></i>طريقة الدفع</h3>
+        <div class="h-60"><canvas id="chartPayment"></canvas></div>
+        <div id="legendPayment" class="mt-4 space-y-2.5"></div>
+      </div>
+      <div class="card rounded-2xl p-5">
+        <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-house text-sm" style="color:var(--blue)"></i>نوع العقار</h3>
+        <div class="h-60"><canvas id="chartPropertyType"></canvas></div>
+        <div id="legendPropertyType" class="mt-4 space-y-2.5"></div>
+      </div>
+    </section>
+
+    <section class="card rounded-2xl overflow-hidden mb-5">
+      <div class="px-5 pt-5 pb-3 flex items-center gap-2">
+        <i class="fa-solid fa-chart-column text-sm" style="color:var(--blue)"></i>
+        <h3 class="text-base font-black" style="color:var(--navy)">التقرير الشهري المقارن</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="text-[10px] border-b font-black" style="border-color:var(--border); color:var(--navy-soft)">
+              <th class="text-right px-4 py-2.5">المؤشر</th>
+              <th class="text-center px-3 py-2.5">الشهر الحالي</th>
+              <th class="text-center px-3 py-2.5">الشهر السابق</th>
+              <th class="text-center px-3 py-2.5">التطور</th>
+            </tr>
+          </thead>
+          <tbody id="mgrReportBody" class="divide-y" style="border-color:var(--border)"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== تبويب: العملاء (Database) ===== -->
+  <div id="mgrView-database" class="mgr-view hidden">
+    <section class="card rounded-2xl p-4 mb-4">
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-sm" style="color:#9AA6BF"></i>
+        <input id="mgrSearchInput" type="text" placeholder="بحث بالاسم أو الهاتف..."
+          class="w-full bg-[#F8FAFC] border border-[var(--border)] rounded-xl pr-10 pl-4 py-3 text-sm focus:outline-none focus:border-blue-400" style="color:var(--navy)">
+      </div>
+    </section>
+    <section class="card rounded-2xl overflow-hidden mb-5">
+      <div class="overflow-x-auto max-h-[560px]">
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="text-[10px] border-b" style="border-color:var(--border)">
+              <th class="text-right px-4 py-3 font-black">العميل</th>
+              <th class="text-right px-4 py-3 font-black">الهاتف</th>
+              <th class="text-right px-4 py-3 font-black">الميزانية</th>
+              <th class="text-right px-4 py-3 font-black">النوع</th>
+              <th class="text-right px-4 py-3 font-black">الحالة</th>
+              <th class="text-right px-4 py-3 font-black">التصنيف</th>
+            </tr>
+          </thead>
+          <tbody id="mgrDbTableBody" class="divide-y" style="border-color:var(--border)"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== تبويبات عامة (Properties / Landbords / contrats) — جداول ديناميكية ===== -->
+  <div id="mgrView-properties" class="mgr-view hidden">
+    <section class="card rounded-2xl overflow-hidden mb-5">
+      <div class="px-5 pt-5 pb-3"><h3 class="text-base font-black" style="color:var(--navy)">العقارات (Properties)</h3></div>
+      <div id="genericTable-properties" class="overflow-x-auto max-h-[560px]"></div>
+    </section>
+  </div>
+
+  <div id="mgrView-landbords" class="mgr-view hidden">
+    <section class="card rounded-2xl overflow-hidden mb-5 border-2" style="border-color:#F59E0B">
+      <div class="px-5 pt-5 pb-3 flex items-center gap-2">
+        <i class="fa-solid fa-lock text-amber-500"></i>
+        <h3 class="text-base font-black" style="color:var(--navy)">الملاك (Landbords) 🔒 سري</h3>
+      </div>
+      <div id="genericTable-landbords" class="overflow-x-auto max-h-[560px]"></div>
+    </section>
+  </div>
+
+  <div id="mgrView-contrats" class="mgr-view hidden">
+    <section class="card rounded-2xl overflow-hidden mb-5 border-2" style="border-color:#F59E0B">
+      <div class="px-5 pt-5 pb-3 flex items-center gap-2">
+        <i class="fa-solid fa-lock text-amber-500"></i>
+        <h3 class="text-base font-black" style="color:var(--navy)">العقود (Contrats) 🔒 سري</h3>
+      </div>
+      <div id="genericTable-contrats" class="overflow-x-auto max-h-[560px]"></div>
+    </section>
+  </div>
 
   <footer class="text-center text-[11px] pt-2" style="color:#9AA6BF">
-    لوحة تحكم العقارات — البيانات متزامنة مع Google Sheets
+    لوحة تحكم الوكالة العقارية — البيانات متزامنة مع Google Sheets
   </footer>
 </div>
 
@@ -206,12 +281,13 @@
 /* ============================================================
    ⚙️ رابط الـ Web App
    ============================================================ */
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxigyTQZOUXhLNm_qb90Fy_v3DDXJELkZ-sjfvxRFGW6GKMKtzjfdCDqAbbaOx96A/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwztZs7nt3hgbI3u7VC8zt3j1nlJccqVV3ah-2WzcdhX4e5yQWXoqG9o_gUKXevP4c/exec';
 
 let CURRENT_ROLE = 'employee';
-let ALL_DATA = [];
-let ACTIVE_TIME = 'all';
-let ACTIVE_QUICK = 'all';
+let EMP_DATA = [];        // بيانات Database منظمة (للموظف والمدير)
+let MGR_RAW = {};         // كل البيانات الخام (Database, Properties, Landbords, contrats)
+let ACTIVE_EMP_STATUS = 'all';
+let ACTIVE_MGR_TAB = 'overview';
 let charts = {};
 
 /* ============================================================
@@ -236,11 +312,13 @@ const PROP_META = {
   local:       { color:'#EA580C', emoji:'🏪', label:'محل تجاري', rowBg:'#FFF3E9', rowBorder:'#F5B27A' },
   default: { color:'#94A3B8', emoji:'🏠', label:'غير محدد', rowBg:'#FFFFFF', rowBorder:'transparent' }
 };
+const PAY_META = {
+  cash:   { color:'#16A34A', emoji:'💵', label:'Cash' },
+  credit: { color:'#DC2626', emoji:'💳', label:'Crédit' },
+  default:{ color:'#94A3B8', emoji:'—', label:'—' }
+};
 
-const TIME_KEYS = ['all','today','yesterday','last_week','last_month'];
-const TIME_LABELS = { all:'الكل', today:'اليوم', yesterday:'أمس', last_week:'الأسبوع الماضي', last_month:'الشهر الماضي' };
-
-const QUICK_KEYS = ['all','vip','warm','cold','nouveau','encours','vendu','perdu'];
+const STATUS_CHIP_KEYS = ['all','vip','warm','cold','nouveau','encours','vendu','perdu'];
 
 /* ============================================================
    أدوات التطبيع
@@ -272,8 +350,12 @@ function propertyKeyFor(raw){
   if(s.includes('local')) return 'local';
   return 'default';
 }
-
-// يبحث عن قيمة داخل الـ row بالاعتماد على كلمات مفتاحية فاسم العمود
+function paymentKeyFor(raw){
+  const s = cleanAlpha(raw);
+  if(s.includes('cash')) return 'cash';
+  if(s.includes('credit')) return 'credit';
+  return 'default';
+}
 function findField(row, keywords){
   const keys = Object.keys(row || {});
   for (const k of keys){
@@ -282,7 +364,6 @@ function findField(row, keywords){
   }
   return '';
 }
-
 function normalizeRow(row){
   return {
     date: findField(row, ['date']),
@@ -290,11 +371,11 @@ function normalizeRow(row){
     phone: findField(row, ['telephone','téléphone','phone']),
     budget: findField(row, ['budget']),
     propertyType: findField(row, ['immobilier','property type','type de bien']),
+    payment: findField(row, ['paiement','payment']),
     status: findField(row, ['status','statut']),
     classification: findField(row, ['classification'])
   };
 }
-
 function parseDMY(str){
   if(!str) return null;
   const p = String(str).trim().split(/[\/\-]/);
@@ -303,19 +384,11 @@ function parseDMY(str){
   if(!d||!m||!y) return null;
   return new Date(y,m-1,d);
 }
-function isInTimeRange(dateStr, range){
-  if(range==='all') return true;
+function inWindow(dateStr, fromDate, toDate){
   const d = parseDMY(dateStr);
   if(!d) return false;
-  const now = new Date();
-  const t0 = new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  if(range==='today') return d.getTime()===t0.getTime();
-  if(range==='yesterday'){ const y=new Date(t0); y.setDate(y.getDate()-1); return d.getTime()===y.getTime(); }
-  if(range==='last_week'){ const w=new Date(t0); w.setDate(w.getDate()-7); return d>=w && d<=t0; }
-  if(range==='last_month'){ const m=new Date(t0); m.setMonth(m.getMonth()-1); return d>=m && d<=t0; }
-  return true;
+  return d >= fromDate && d <= toDate;
 }
-
 function badge(label, emoji, color){
   if(!label) return '<span class="text-slate-400">—</span>';
   return `<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border" style="background:${color}18;color:${color};border-color:${color}44">${emoji||''} ${label}</span>`;
@@ -347,9 +420,7 @@ document.getElementById('loginBtn').addEventListener('click', async ()=>{
 
   const password = document.getElementById('managerPassword').value;
   btnText.textContent = 'جارِ التحقق...';
-  icon.classList.add('fa-spin');
-  icon.classList.remove('fa-right-to-bracket');
-  icon.classList.add('fa-spinner');
+  icon.className = 'fa-solid fa-spinner fa-spin text-sm';
 
   try{
     const params = new URLSearchParams({ action:'login', role:CURRENT_ROLE });
@@ -364,68 +435,251 @@ document.getElementById('loginBtn').addEventListener('click', async ()=>{
       return;
     }
 
-    enterDashboard();
+    document.getElementById('loginScreen').classList.add('hidden');
+    if(CURRENT_ROLE === 'manager'){
+      window.__mgrPassword = password;
+      document.getElementById('managerScreen').classList.remove('hidden');
+      enterManager();
+    } else {
+      document.getElementById('employeeScreen').classList.remove('hidden');
+      enterEmployee();
+    }
 
   } catch(err){
     errorEl.textContent = 'تعذر الاتصال بالخادم: ' + err.message;
     errorEl.classList.remove('hidden');
   } finally {
     btnText.textContent = 'دخول';
-    icon.classList.remove('fa-spin','fa-spinner');
-    icon.classList.add('fa-right-to-bracket');
+    icon.className = 'fa-solid fa-right-to-bracket text-sm';
   }
 });
 
-document.getElementById('logoutBtn').addEventListener('click', ()=>{
+function logout(){
   CURRENT_ROLE = 'employee';
+  window.__mgrPassword = '';
   document.getElementById('managerPassword').value = '';
   selectRole('employee');
-  document.getElementById('dashboardScreen').classList.add('hidden');
+  document.getElementById('employeeScreen').classList.add('hidden');
+  document.getElementById('managerScreen').classList.add('hidden');
   document.getElementById('loginScreen').classList.remove('hidden');
-});
-
-function enterDashboard(){
-  document.getElementById('loginScreen').classList.add('hidden');
-  document.getElementById('dashboardScreen').classList.remove('hidden');
-  document.getElementById('roleLabel').textContent = CURRENT_ROLE==='manager' ? 'متصل كـ: المدير 👑' : 'متصل كـ: موظف';
-  renderTimeSelect();
-  renderQuickChips();
-  loadData();
 }
+document.getElementById('logoutBtnEmp').addEventListener('click', logout);
+document.getElementById('logoutBtnMgr').addEventListener('click', logout);
 
 /* ============================================================
-   الفلاتر
+   ===================== واجهة الموظف =====================
    ============================================================ */
-function renderTimeSelect(){
-  const sel = document.getElementById('timeSelect');
-  sel.innerHTML = TIME_KEYS.map(k=>`<option value="${k}">${TIME_LABELS[k]}</option>`).join('');
-  sel.value = ACTIVE_TIME;
-  sel.addEventListener('change', e=>{ ACTIVE_TIME = e.target.value; applyFilters(); });
+function enterEmployee(){
+  renderEmpChips();
+  loadEmployeeData();
 }
 
-function renderQuickChips(){
-  const container = document.getElementById('quickChips');
-  container.innerHTML = QUICK_KEYS.map(k=>{
-    if(k==='all') return chipHtml(k,'الكل','🔎','#94A3B8');
+function renderEmpChips(){
+  const container = document.getElementById('empStatusChips');
+  container.innerHTML = STATUS_CHIP_KEYS.map(k=>{
+    if(k==='all') return chip('all','الكل','🔎','#94A3B8', ACTIVE_EMP_STATUS);
     const meta = CLASS_META[k] || STATUS_META[k];
-    return chipHtml(k, meta.label, meta.emoji, meta.color);
+    return chip(k, meta.label, meta.emoji, meta.color, ACTIVE_EMP_STATUS);
   }).join('');
   container.querySelectorAll('button').forEach(btn=>{
-    btn.addEventListener('click', ()=>{ ACTIVE_QUICK = btn.dataset.key; renderQuickChips(); applyFilters(); });
+    btn.addEventListener('click', ()=>{ ACTIVE_EMP_STATUS = btn.dataset.key; renderEmpChips(); applyEmpFilters(); });
   });
 }
-function chipHtml(key,label,emoji,color){
-  const active = key===ACTIVE_QUICK;
-  const style = active ? `background:${color}22;border-color:${color};color:${color}` : `background:#fff;border-color:var(--border);color:var(--gray)`;
+function chip(key,label,emoji,color,active){
+  const isActive = key===active;
+  const style = isActive ? `background:${color}22;border-color:${color};color:${color}` : `background:#fff;border-color:var(--border);color:var(--gray)`;
   return `<button data-key="${key}" class="chip rounded-full px-3.5 py-2 text-[11px] font-bold border flex items-center gap-1.5" style="${style}">${emoji} ${label}</button>`;
 }
 
+async function loadEmployeeData(){
+  const loading = document.getElementById('empLoadingState');
+  const errorBanner = document.getElementById('empErrorBanner');
+  const refreshIcon = document.getElementById('refreshIconEmp');
+  loading.classList.remove('hidden');
+  errorBanner.classList.add('hidden');
+  refreshIcon.classList.add('fa-spin');
+
+  try{
+    const res = await fetch(WEB_APP_URL + '?action=getEmployeeData');
+    const json = await res.json();
+    if(!json.success) throw new Error(json.error || 'خطأ غير معروف');
+
+    const rawRows = (json.data && json.data.Database) ? json.data.Database : [];
+    EMP_DATA = rawRows.map(normalizeRow).filter(r => r.name && String(r.name).trim() !== '');
+
+    if(!EMP_DATA.length){
+      errorBanner.classList.remove('hidden');
+      document.getElementById('empErrorText').textContent = 'لا توجد بيانات فورقة Database.';
+    }
+
+    applyEmpFilters();
+
+  } catch(err){
+    errorBanner.classList.remove('hidden');
+    document.getElementById('empErrorText').textContent = 'تعذر تحميل البيانات: ' + err.message;
+  } finally {
+    loading.classList.add('hidden');
+    refreshIcon.classList.remove('fa-spin');
+  }
+}
+
+function applyEmpFilters(){
+  const q = (document.getElementById('empSearchInput').value || '').toLowerCase().trim();
+  let filtered = EMP_DATA;
+  if(ACTIVE_EMP_STATUS !== 'all'){
+    filtered = filtered.filter(d => classKeyFor(d.classification)===ACTIVE_EMP_STATUS || statusKeyFor(d.status)===ACTIVE_EMP_STATUS);
+  }
+  if(q){
+    filtered = filtered.filter(d => (d.name||'').toString().toLowerCase().includes(q) || (d.phone||'').toString().toLowerCase().includes(q));
+  }
+  renderEmpTable(filtered);
+}
+
+function renderEmpTable(data){
+  const wrap = document.getElementById('empTableWrap');
+  const empty = document.getElementById('empEmptyState');
+  if(!data.length){
+    wrap.classList.add('hidden');
+    empty.classList.remove('hidden'); empty.classList.add('flex');
+    return;
+  }
+  empty.classList.add('hidden'); empty.classList.remove('flex');
+  wrap.classList.remove('hidden');
+
+  document.getElementById('empTableBody').innerHTML = data.map(d=>{
+    const prop = PROP_META[propertyKeyFor(d.propertyType)] || PROP_META.default;
+    const stat = STATUS_META[statusKeyFor(d.status)] || STATUS_META.default;
+    return `<tr class="fade-in" style="background:${prop.rowBg}; border-right:4px solid ${prop.rowBorder}">
+      <td class="px-4 py-3 whitespace-nowrap">
+        <div class="flex items-center gap-2">
+          <div class="avatar-circle" style="background:${prop.color}">${initialsOf(d.name)}</div>
+          <span class="font-bold" style="color:var(--navy)">${d.name||'—'}</span>
+        </div>
+      </td>
+      <td class="px-4 py-3 whitespace-nowrap" style="color:var(--gray)" dir="ltr">${d.phone||'—'}</td>
+      <td class="px-4 py-3 whitespace-nowrap">${prop.emoji} ${prop.label}</td>
+      <td class="px-4 py-3 whitespace-nowrap">${badge(stat.label, stat.emoji, stat.color)}</td>
+    </tr>`;
+  }).join('');
+}
+
+document.getElementById('empSearchInput').addEventListener('input', applyEmpFilters);
+document.getElementById('refreshBtnEmp').addEventListener('click', loadEmployeeData);
+
 /* ============================================================
-   الإحصائيات والرسوم
+   ===================== واجهة المدير =====================
    ============================================================ */
-function renderTotal(data){
-  document.getElementById('totalCount').textContent = data.length;
-  document.getElementById('totalCard').classList.remove('hidden');
+const MGR_TABS = [
+  { key:'overview', label:'نظرة عامة', icon:'fa-gauge-high' },
+  { key:'database', label:'العملاء', icon:'fa-users' },
+  { key:'properties', label:'العقارات', icon:'fa-house' },
+  { key:'landbords', label:'الملاك 🔒', icon:'fa-user-lock' },
+  { key:'contrats', label:'العقود 🔒', icon:'fa-file-contract' },
+];
+
+function enterManager(){
+  const nav = document.getElementById('mgrTabsNav');
+  nav.innerHTML = MGR_TABS.map((t,i)=>`
+    <button data-key="${t.key}" class="tab-pill ${i===0?'active':''} px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2">
+      <i class="fa-solid ${t.icon} text-xs"></i> ${t.label}
+    </button>`).join('');
+  nav.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      nav.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      switchMgrTab(btn.dataset.key);
+    });
+  });
+
+  loadManagerData();
+}
+
+function switchMgrTab(key){
+  ACTIVE_MGR_TAB = key;
+  document.querySelectorAll('.mgr-view').forEach(v=>v.classList.add('hidden'));
+  document.getElementById('mgrView-' + key).classList.remove('hidden');
+}
+
+async function loadManagerData(){
+  const loading = document.getElementById('mgrLoadingState');
+  const errorBanner = document.getElementById('mgrErrorBanner');
+  const refreshIcon = document.getElementById('refreshIconMgr');
+  loading.classList.remove('hidden');
+  errorBanner.classList.add('hidden');
+  refreshIcon.classList.add('fa-spin');
+
+  try{
+    // بيانات PROJET01
+    const empRes = await fetch(WEB_APP_URL + '?action=getEmployeeData');
+    const empJson = await empRes.json();
+    if(!empJson.success) throw new Error(empJson.error || 'خطأ فجلب بيانات PROJET01');
+
+    // بيانات Valut
+    const vaultParams = new URLSearchParams({ action:'getVaultData', password: window.__mgrPassword || '' });
+    const vaultRes = await fetch(WEB_APP_URL + '?' + vaultParams.toString());
+    const vaultJson = await vaultRes.json();
+    if(!vaultJson.success) throw new Error(vaultJson.error || 'خطأ فجلب بيانات Valut');
+
+    MGR_RAW = Object.assign({}, empJson.data, vaultJson.data);
+
+    switchMgrTab(ACTIVE_MGR_TAB);
+    renderManagerOverview();
+    renderManagerDatabaseTab();
+    renderGenericTable('properties', MGR_RAW.Properties);
+    renderGenericTable('landbords', MGR_RAW.Landbords);
+    renderGenericTable('contrats', MGR_RAW.contrats);
+
+  } catch(err){
+    errorBanner.classList.remove('hidden');
+    document.getElementById('mgrErrorText').textContent = 'تعذر تحميل البيانات: ' + err.message;
+  } finally {
+    loading.classList.add('hidden');
+    refreshIcon.classList.remove('fa-spin');
+  }
+}
+
+/* ---------- نظرة عامة: إحصائيات + مبيانات + تقرير شهري ---------- */
+function getMgrClients(){
+  const rawRows = MGR_RAW.Database || [];
+  return rawRows.map(normalizeRow).filter(r => r.name && String(r.name).trim() !== '');
+}
+
+function renderManagerOverview(){
+  const data = getMgrClients();
+
+  const counts = {
+    total: data.length,
+    apart: data.filter(d=>propertyKeyFor(d.propertyType)==='appartement').length,
+    villa: data.filter(d=>propertyKeyFor(d.propertyType)==='villa').length,
+    local: data.filter(d=>propertyKeyFor(d.propertyType)==='local').length,
+    vip: data.filter(d=>classKeyFor(d.classification)==='vip').length,
+    warm: data.filter(d=>classKeyFor(d.classification)==='warm').length,
+    cold: data.filter(d=>classKeyFor(d.classification)==='cold').length,
+    vendu: data.filter(d=>statusKeyFor(d.status)==='vendu').length,
+  };
+
+  const cards = [
+    { label:'إجمالي العملاء', value:counts.total, color:'#16A34A', bg:'#ECFDF5', emoji:'👥' },
+    { label:'شقق', value:counts.apart, color:PROP_META.appartement.color, bg:'#EFF6FF', emoji:'🏢' },
+    { label:'فيلات', value:counts.villa, color:PROP_META.villa.color, bg:'#FEF9E7', emoji:'🏰' },
+    { label:'محلات تجارية', value:counts.local, color:PROP_META.local.color, bg:'#FFF3E9', emoji:'🏪' },
+    { label:'VIP', value:counts.vip, color:CLASS_META.vip.color, bg:'#ECFDF5', emoji:'🔥' },
+    { label:'WARM', value:counts.warm, color:CLASS_META.warm.color, bg:'#FFF7ED', emoji:'🪵' },
+    { label:'COLD', value:counts.cold, color:CLASS_META.cold.color, bg:'#FEF2F2', emoji:'❄️' },
+    { label:'مُباع', value:counts.vendu, color:STATUS_META.vendu.color, bg:'#ECFDF5', emoji:'✅' },
+  ];
+
+  document.getElementById('mgrStatsGrid').innerHTML = cards.map(c=>`
+    <div class="rounded-2xl p-4 flex items-center justify-between fade-in border" style="background:${c.bg}; border-color:${c.color}33">
+      <div class="icon-circle" style="background:${c.color}22">${c.emoji}</div>
+      <div class="text-right">
+        <p class="text-xs font-black mb-0.5" style="color:${c.color}">${c.label}</p>
+        <p class="text-2xl font-black" style="color:var(--navy)">${c.value}</p>
+      </div>
+    </div>`).join('');
+
+  renderMgrCharts(data);
+  renderMgrMonthlyReport(data);
 }
 
 function buildDonut(canvasId, labels, values, colors){
@@ -433,7 +687,6 @@ function buildDonut(canvasId, labels, values, colors){
   if(!ctx) return;
   if(charts[canvasId]) charts[canvasId].destroy();
   const total = values.reduce((a,b)=>a+b,0) || 1;
-
   charts[canvasId] = new Chart(ctx, {
     type:'doughnut',
     data:{ labels, datasets:[{ data:values, backgroundColor:colors, borderColor:'#FFFFFF', borderWidth:3, hoverOffset:8 }] },
@@ -461,9 +714,7 @@ function renderLegend(containerId, entries){
   }).join('');
 }
 
-function renderCharts(data){
-  document.getElementById('chartsWrap').classList.remove('hidden');
-
+function renderMgrCharts(data){
   const clsCounts = {};
   data.forEach(d=>{ const k = classKeyFor(d.classification); clsCounts[k]=(clsCounts[k]||0)+1; });
   let clsEntries = Object.keys(clsCounts).map(k=>({ value:clsCounts[k], label:(CLASS_META[k]||CLASS_META.default).label, color:(CLASS_META[k]||CLASS_META.default).color }));
@@ -471,41 +722,94 @@ function renderCharts(data){
   buildDonut('chartClassification', clsEntries.map(e=>e.label), clsEntries.map(e=>e.value), clsEntries.map(e=>e.color));
   renderLegend('legendClassification', clsEntries);
 
+  const payCounts = {};
+  data.forEach(d=>{ const k = paymentKeyFor(d.payment); payCounts[k]=(payCounts[k]||0)+1; });
+  let payEntries = Object.keys(payCounts).map(k=>({ value:payCounts[k], label:(PAY_META[k]||PAY_META.default).label, color:(PAY_META[k]||PAY_META.default).color }));
+  if(!payEntries.length) payEntries=[{value:1,label:'لا توجد بيانات',color:'#E2E8F5'}];
+  buildDonut('chartPayment', payEntries.map(e=>e.label), payEntries.map(e=>e.value), payEntries.map(e=>e.color));
+  renderLegend('legendPayment', payEntries);
+
   const propCounts = {};
   data.forEach(d=>{ const k = propertyKeyFor(d.propertyType); propCounts[k]=(propCounts[k]||0)+1; });
   let propEntries = Object.keys(propCounts).map(k=>({ value:propCounts[k], label:(PROP_META[k]||PROP_META.default).label, color:(PROP_META[k]||PROP_META.default).color }));
   if(!propEntries.length) propEntries=[{value:1,label:'لا توجد بيانات',color:'#E2E8F5'}];
   buildDonut('chartPropertyType', propEntries.map(e=>e.label), propEntries.map(e=>e.value), propEntries.map(e=>e.color));
   renderLegend('legendPropertyType', propEntries);
-
-  const statCounts = {};
-  data.forEach(d=>{ const k = statusKeyFor(d.status); statCounts[k]=(statCounts[k]||0)+1; });
-  let statEntries = Object.keys(statCounts).map(k=>({ value:statCounts[k], label:(STATUS_META[k]||STATUS_META.default).label, color:(STATUS_META[k]||STATUS_META.default).color }));
-  if(!statEntries.length) statEntries=[{value:1,label:'لا توجد بيانات',color:'#E2E8F5'}];
-  buildDonut('chartStatus', statEntries.map(e=>e.label), statEntries.map(e=>e.value), statEntries.map(e=>e.color));
-  renderLegend('legendStatus', statEntries);
 }
 
-/* ============================================================
-   الجدول
-   ============================================================ */
-function renderTable(data){
-  const wrap = document.getElementById('tableWrap');
-  const empty = document.getElementById('emptyState');
+function pctChange(curr, prev){
+  if(prev === 0) return curr === 0 ? 0 : 100;
+  return Math.round(((curr - prev) / prev) * 100);
+}
+function computeMetrics(rows){
+  return {
+    total: rows.length,
+    apart: rows.filter(d=>propertyKeyFor(d.propertyType)==='appartement').length,
+    villa: rows.filter(d=>propertyKeyFor(d.propertyType)==='villa').length,
+    local: rows.filter(d=>propertyKeyFor(d.propertyType)==='local').length,
+    vip: rows.filter(d=>classKeyFor(d.classification)==='vip').length,
+    warm: rows.filter(d=>classKeyFor(d.classification)==='warm').length,
+    cold: rows.filter(d=>classKeyFor(d.classification)==='cold').length,
+    vendu: rows.filter(d=>statusKeyFor(d.status)==='vendu').length,
+    perdu: rows.filter(d=>statusKeyFor(d.status)==='perdu').length,
+  };
+}
 
-  if(!data.length){
-    wrap.classList.add('hidden');
-    empty.classList.remove('hidden'); empty.classList.add('flex');
-    return;
+function renderMgrMonthlyReport(data){
+  const now = new Date();
+  const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const start30 = new Date(today0); start30.setDate(start30.getDate()-30);
+  const start60 = new Date(today0); start60.setDate(start60.getDate()-60);
+
+  const currentRows = data.filter(d => inWindow(d.date, start30, today0));
+  const previousRows = data.filter(d => inWindow(d.date, start60, start30));
+
+  const curr = computeMetrics(currentRows);
+  const prev = computeMetrics(previousRows);
+
+  const rows = [
+    { label:'إجمالي العملاء', emoji:'👥', c:curr.total, p:prev.total },
+    { label:'شقق', emoji:'🏢', c:curr.apart, p:prev.apart },
+    { label:'فيلات', emoji:'🏰', c:curr.villa, p:prev.villa },
+    { label:'محلات تجارية', emoji:'🏪', c:curr.local, p:prev.local },
+    { label:'VIP', emoji:'🔥', c:curr.vip, p:prev.vip },
+    { label:'WARM', emoji:'🪵', c:curr.warm, p:prev.warm },
+    { label:'COLD', emoji:'❄️', c:curr.cold, p:prev.cold },
+    { label:'مُباع', emoji:'✅', c:curr.vendu, p:prev.vendu },
+    { label:'مفقود', emoji:'❌', c:curr.perdu, p:prev.perdu },
+  ];
+
+  document.getElementById('mgrReportBody').innerHTML = rows.map(r=>{
+    const change = pctChange(r.c, r.p);
+    const flat = change===0;
+    const up = change>0;
+    const color = flat ? '#94A3B8' : (up ? '#16A34A' : '#DC2626');
+    const arrow = flat ? '→' : (up ? '↑' : '↓');
+    return `<tr>
+      <td class="px-4 py-3 flex items-center gap-2 font-bold" style="color:var(--navy)">${r.emoji} ${r.label}</td>
+      <td class="px-3 py-3 text-center font-black" style="color:var(--navy)">${r.c}</td>
+      <td class="px-3 py-3 text-center font-semibold" style="color:var(--gray)">${r.p}</td>
+      <td class="px-3 py-3 text-center font-black" style="color:${color}">${arrow} ${Math.abs(change)}%</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ---------- تبويب العملاء التفصيلي ---------- */
+function renderManagerDatabaseTab(){
+  applyMgrDbFilters();
+  document.getElementById('mgrSearchInput').removeEventListener('input', applyMgrDbFilters);
+  document.getElementById('mgrSearchInput').addEventListener('input', applyMgrDbFilters);
+}
+function applyMgrDbFilters(){
+  const q = (document.getElementById('mgrSearchInput').value || '').toLowerCase().trim();
+  let data = getMgrClients();
+  if(q){
+    data = data.filter(d => (d.name||'').toString().toLowerCase().includes(q) || (d.phone||'').toString().toLowerCase().includes(q));
   }
-  empty.classList.add('hidden'); empty.classList.remove('flex');
-  wrap.classList.remove('hidden');
-
-  document.getElementById('tableBody').innerHTML = data.map(d=>{
+  document.getElementById('mgrDbTableBody').innerHTML = data.map(d=>{
     const prop = PROP_META[propertyKeyFor(d.propertyType)] || PROP_META.default;
     const stat = STATUS_META[statusKeyFor(d.status)] || STATUS_META.default;
     const cls  = CLASS_META[classKeyFor(d.classification)] || CLASS_META.default;
-
     return `<tr class="fade-in" style="background:${prop.rowBg}; border-right:4px solid ${prop.rowBorder}">
       <td class="px-4 py-3 whitespace-nowrap">
         <div class="flex items-center gap-2">
@@ -522,66 +826,24 @@ function renderTable(data){
   }).join('');
 }
 
-/* ============================================================
-   الفلترة العامة
-   ============================================================ */
-function applyFilters(){
-  const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-  let filtered = ALL_DATA.filter(d => isInTimeRange(d.date, ACTIVE_TIME));
-
-  if(ACTIVE_QUICK !== 'all'){
-    filtered = filtered.filter(d => classKeyFor(d.classification)===ACTIVE_QUICK || statusKeyFor(d.status)===ACTIVE_QUICK);
+/* ---------- جداول ديناميكية عامة (Properties / Landbords / contrats) ---------- */
+function renderGenericTable(containerSuffix, rows){
+  const container = document.getElementById('genericTable-' + containerSuffix);
+  if(!container) return;
+  if(!rows || !rows.length){
+    container.innerHTML = `<div class="p-8 text-center text-gray-400 text-sm">لا توجد بيانات فهاد الشيت.</div>`;
+    return;
   }
-  if(q){
-    filtered = filtered.filter(d => (d.name||'').toString().toLowerCase().includes(q) || (d.phone||'').toString().toLowerCase().includes(q));
-  }
-
-  renderTotal(filtered);
-  renderCharts(filtered);
-  renderTable(filtered);
+  const headers = Object.keys(rows[0]);
+  const thead = headers.map(h=>`<th class="text-right px-4 py-3 text-[11px] font-black text-gray-500 border-b">${h}</th>`).join('');
+  const tbody = rows.map(row=>`
+    <tr class="border-b hover:bg-gray-50">
+      ${headers.map(h=>`<td class="px-4 py-2.5 text-xs">${row[h] ?? '—'}</td>`).join('')}
+    </tr>`).join('');
+  container.innerHTML = `<table class="w-full"><thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody></table>`;
 }
 
-/* ============================================================
-   جلب البيانات
-   ============================================================ */
-async function loadData(){
-  const loading = document.getElementById('loadingState');
-  const errorBanner = document.getElementById('errorBanner');
-  const refreshIcon = document.getElementById('refreshIcon');
-
-  loading.classList.remove('hidden');
-  errorBanner.classList.add('hidden');
-  refreshIcon.classList.add('fa-spin');
-
-  try{
-    const res = await fetch(WEB_APP_URL + '?action=getEmployeeData');
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const json = await res.json();
-
-    if(!json.success) throw new Error(json.error || 'خطأ غير معروف من الخادم');
-
-    const rawRows = (json.data && json.data.Database) ? json.data.Database : [];
-    ALL_DATA = rawRows.map(normalizeRow).filter(r => r.name && String(r.name).trim() !== '');
-
-    if(!ALL_DATA.length){
-      errorBanner.classList.remove('hidden');
-      document.getElementById('errorText').textContent = 'تم الاتصال بنجاح، لكن لم يتم العثور على بيانات في ورقة "Database".';
-    }
-
-    applyFilters();
-
-  } catch(err){
-    errorBanner.classList.remove('hidden');
-    document.getElementById('errorText').textContent = 'تعذر تحميل البيانات: ' + err.message;
-    console.error('Dashboard load error:', err);
-  } finally {
-    loading.classList.add('hidden');
-    refreshIcon.classList.remove('fa-spin');
-  }
-}
-
-document.getElementById('searchInput').addEventListener('input', applyFilters);
-document.getElementById('refreshBtn').addEventListener('click', loadData);
+document.getElementById('refreshBtnMgr').addEventListener('click', loadManagerData);
 </script>
 </body>
 </html>
