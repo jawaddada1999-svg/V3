@@ -1,770 +1,587 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" id="htmlRoot">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>لوحة تحكم العقارات</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>لوحة تحكم العقارات</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com">
-    </script>
-    <!-- Chart.js + Datalabels Plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js">
-    </script>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- خط Tajawal -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --navy: #0F1E3D;
-            --navy-soft: #375380;
-            --blue: #2563EB;
-            --bg: #F5F7FB;
-            --gray: #6B7A99;
-            --border: #E6EAF2;
-        }
-        html,
-        body {
-            background: var(--bg);
-        }
-        body {
-            font-family: 'Tajawal', sans-serif;
-            color: var(--navy);
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #C9D3E3;
-            border-radius: 8px;
-        }
+<style>
+  :root{
+    --navy:#0F1E3D; --navy-soft:#375380; --blue:#2563EB;
+    --bg:#F5F7FB; --gray:#6B7A99; --border:#E6EAF2;
+  }
+  html,body{ background:var(--bg); }
+  body{ font-family:'Tajawal',sans-serif; color:var(--navy); }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:#C9D3E3; border-radius:8px; }
 
-        .card {
-            background: #fff;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 10px -4px rgba(15, 30, 61, 0.06);
-        }
-        .fade-in {
-            animation: fadeIn .35s ease both;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(6px);
-            }
-            to {
-                opacity: 1;
-                transform: none;
-            }
-        }
+  .card{ background:#fff; border:1px solid var(--border); box-shadow:0 2px 10px -4px rgba(15,30,61,0.06); }
+  .fade-in{ animation:fadeIn .35s ease both; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
 
-        .icon-circle {
-            width: 46px;
-            height: 46px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
+  .icon-circle{ width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
 
-        .chip {
-            transition: all .15s ease;
-            white-space: nowrap;
-        }
-        .scroller {
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        .scroller::-webkit-scrollbar {
-            display: none;
-        }
+  .chip{ transition:all .15s ease; white-space:nowrap; }
+  .scroller{ overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; }
+  .scroller::-webkit-scrollbar{ display:none; }
 
-        .role-btn.active {
-            background: var(--navy);
-            color: #fff;
-        }
-        .role-btn:not(.active) {
-            background: #fff;
-            color: var(--navy);
-            border: 1px solid var(--border);
-        }
+  .role-btn.active{ background:var(--navy); color:#fff; }
+  .role-btn:not(.active){ background:#fff; color:var(--navy); border:1px solid var(--border); }
 
-        select.filter-select {
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7A99' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: left .75rem center;
-            background-size: 16px;
-        }
+  select.filter-select{
+    appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7A99' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:left .75rem center; background-size:16px;
+  }
 
-        table thead th {
-            position: sticky;
-            top: 0;
-            background: #FAFBFF;
-            z-index: 5;
-            color: var(--navy-soft);
-        }
-        tbody tr:hover {
-            background: #F7F9FF;
-        }
+  table thead th{ position:sticky; top:0; background:#FAFBFF; z-index:5; color:var(--navy-soft); }
+  tbody tr:hover{ background:#F7F9FF; }
 
-        .skeleton {
-            background: linear-gradient(90deg, #EEF1F8 25%, #F8FAFF 37%, #EEF1F8 63%);
-            background-size: 400% 100%;
-            animation: shimmer 1.4s ease infinite;
-        }
-        @keyframes shimmer {
-            0% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0 50%;
-            }
-        }
+  .skeleton{ background:linear-gradient(90deg,#EEF1F8 25%,#F8FAFF 37%,#EEF1F8 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+  @keyframes shimmer{ 0%{background-position:100% 50%;} 100%{background-position:0 50%;} }
 
-        input::placeholder {
-            color: #9AA6BF;
-        }
-        .avatar-circle {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 11px;
-            color: #fff;
-            flex-shrink: 0;
-        }
-    </style>
+  input::placeholder{ color:#9AA6BF; }
+  .avatar-circle{ width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:11px; color:#fff; flex-shrink:0; }
+</style>
 </head>
 
 <body class="min-h-screen">
 
-    <!-- ===================== شاشة تسجيل الدخول ===================== -->
-    <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
-        <div class="card rounded-2xl p-8 w-full max-w-sm fade-in">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-3xl mx-auto mb-3">🏢</div>
-                <h1 class="text-xl font-black">لوحة تحكم العقارات</h1>
-                <p class="text-xs text-gray-500 mt-1 font-semibold">اختر نوع الدخول للمتابعة</p>
-            </div>
-
-            <div class="flex gap-2 mb-5">
-                <button id="roleEmployeeBtn" class="role-btn active flex-1 py-2.5 rounded-xl text-sm font-bold border" data-role="employee">
-                    <i class="fa-solid fa-user text-xs ml-1"></i> موظف
-                </button>
-                <button id="roleManagerBtn" class="role-btn flex-1 py-2.5 rounded-xl text-sm font-bold border" data-role="manager">
-                    <i class="fa-solid fa-user-shield text-xs ml-1"></i> مدير
-                </button>
-            </div>
-
-            <div id="passwordField" class="hidden mb-4">
-                <label class="text-xs font-bold text-gray-500 mb-1.5 block">كلمة السر</label>
-                <input id="managerPassword" type="password" placeholder="••••••••"
-                class="w-full border border-[var(--border)] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400">
-            </div>
-
-            <button id="loginBtn" class="w-full bg-[var(--navy)] text-white font-black py-3 rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-right-to-bracket text-sm" id="loginIcon"></i>
-                <span id="loginBtnText">دخول</span>
-            </button>
-
-            <p id="loginError" class="hidden text-red-500 text-xs text-center mt-3 font-semibold"></p>
-        </div>
+<!-- ===================== شاشة تسجيل الدخول ===================== -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
+  <div class="card rounded-2xl p-8 w-full max-w-sm fade-in">
+    <div class="text-center mb-6">
+      <div class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-3xl mx-auto mb-3">🏢</div>
+      <h1 class="text-xl font-black">لوحة تحكم العقارات</h1>
+      <p class="text-xs text-gray-500 mt-1 font-semibold">اختر نوع الدخول للمتابعة</p>
     </div>
 
-    <!-- ===================== الداشبورد ===================== -->
-    <div id="dashboardScreen" class="hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-
-        <!-- الشريط العلوي -->
-        <header class="pt-6 pb-5">
-            <div class="flex items-center justify-between mb-5">
-                <button id="refreshBtn" class="card w-11 h-11 rounded-full flex items-center justify-center shrink-0" style="color:var(--blue)" title="تحديث">
-                    <i class="fa-solid fa-rotate-right text-sm" id="refreshIcon"></i>
-                </button>
-                <div class="text-center">
-                    <h1 class="text-2xl sm:text-3xl font-black flex items-center justify-center gap-2" style="color:var(--navy)">
-                        <span>📊</span><span>لوحة تحكم العقارات</span>
-                    </h1>
-                    <p id="roleLabel" class="text-[12px] mt-1 font-bold" style="color:var(--gray)"></p>
-                </div>
-                <button id="logoutBtn" class="card w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-red-500" title="خروج">
-                    <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- الفلاتر والبحث -->
-        <section class="card rounded-2xl p-4 mb-5 space-y-3">
-            <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-sm" style="color:#9AA6BF"></i>
-                <input id="searchInput" type="text" placeholder="بحث بالاسم أو الهاتف..."
-                class="w-full bg-[#F8FAFC] border border-[var(--border)] rounded-xl pr-10 pl-4 py-3 text-sm focus:outline-none focus:border-blue-400 transition" style="color:var(--navy)">
-            </div>
-
-            <div>
-                <label class="text-[11px] font-bold mb-1.5 block" style="color:var(--gray)">الفترة الزمنية</label>
-                <select id="timeSelect" class="filter-select w-full bg-[#F8FAFC] border border-[var(--border)] rounded-xl pl-8 pr-3 py-2.5 text-sm font-bold focus:outline-none focus:border-blue-400" style="color:var(--navy)"></select>
-            </div>
-
-            <div>
-                <p class="text-[11px] font-bold mb-2" style="color:var(--gray)">فلتر سريع (التصنيف / الحالة)</p>
-                <div class="scroller flex gap-2 pb-1" id="quickChips"></div>
-            </div>
-        </section>
-
-        <!-- خطأ -->
-        <div id="errorBanner" class="hidden bg-red-50 border border-red-200 rounded-2xl px-4 py-4 mb-5 flex items-start gap-3 fade-in">
-            <div class="icon-circle bg-red-100 text-red-500"><i class="fa-solid fa-triangle-exclamation text-sm"></i></div>
-            <span id="errorText" class="text-sm text-red-600 leading-relaxed pt-1.5">تعذر تحميل البيانات.</span>
-        </div>
-
-        <!-- تحميل -->
-        <div id="loadingState" class="card rounded-2xl p-5 mb-5">
-            <div class="skeleton h-10 w-full rounded-xl mb-2.5"></div>
-            <div class="skeleton h-10 w-full rounded-xl mb-2.5"></div>
-            <div class="skeleton h-10 w-full rounded-xl"></div>
-        </div>
-
-        <!-- بطاقة إجمالي العملاء -->
-        <section id="totalCard" class="rounded-2xl p-5 mb-5 hidden fade-in" style="background:#16A34A; box-shadow:0 14px 32px -12px rgba(22,163,74,0.5);">
-            <div class="flex items-center justify-between">
-                <div class="icon-circle" style="background:rgba(255,255,255,0.2); font-size:26px; width:58px; height:58px;">👥</div>
-                <div class="text-right">
-                    <p class="text-sm mb-1 font-black text-white">إجمالي العملاء</p>
-                    <p class="text-4xl font-black text-white" id="totalCount">0</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- الرسوم البيانية -->
-        <section id="chartsWrap" class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5 hidden">
-            <div class="card rounded-2xl p-5">
-                <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-fire text-sm" style="color:var(--blue)"></i>التصنيف</h3>
-                <div class="h-60"><canvas id="chartClassification"></canvas></div>
-                <div id="legendClassification" class="mt-4 space-y-2.5"></div>
-            </div>
-            <div class="card rounded-2xl p-5">
-                <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-house text-sm" style="color:var(--blue)"></i>نوع العقار</h3>
-                <div class="h-60"><canvas id="chartPropertyType"></canvas></div>
-                <div id="legendPropertyType" class="mt-4 space-y-2.5"></div>
-            </div>
-            <div class="card rounded-2xl p-5">
-                <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-chart-simple text-sm" style="color:var(--blue)"></i>الحالة</h3>
-                <div class="h-60"><canvas id="chartStatus"></canvas></div>
-                <div id="legendStatus" class="mt-4 space-y-2.5"></div>
-            </div>
-        </section>
-
-        <!-- فارغ -->
-        <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center card rounded-2xl mb-5" style="color:var(--gray)">
-            <div class="text-4xl mb-3">🗂️</div>
-            <p class="text-sm font-bold">لا توجد بيانات مطابقة</p>
-        </div>
-
-        <!-- الجدول -->
-        <section id="tableWrap" class="card rounded-2xl overflow-hidden mb-5 hidden">
-            <div class="px-5 pt-5 pb-3">
-                <h3 class="text-base font-black" style="color:var(--navy)">نظرة عامة على العملاء</h3>
-            </div>
-            <div class="overflow-x-auto max-h-[500px]">
-                <table class="w-full text-xs">
-                    <thead>
-                        <tr class="text-[10px] border-b" style="border-color:var(--border)">
-                            <th class="text-right px-4 py-3 font-black">العميل</th>
-                            <th class="text-right px-4 py-3 font-black">الهاتف</th>
-                            <th class="text-right px-4 py-3 font-black">الميزانية</th>
-                            <th class="text-right px-4 py-3 font-black">النوع</th>
-                            <th class="text-right px-4 py-3 font-black">الحالة</th>
-                            <th class="text-right px-4 py-3 font-black">التصنيف</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody" class="divide-y" style="border-color:var(--border)"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <footer class="text-center text-[11px] pt-2" style="color:#9AA6BF">
-            لوحة تحكم العقارات — البيانات متزامنة مع Google Sheets
-        </footer>
+    <div class="flex gap-2 mb-5">
+      <button id="roleEmployeeBtn" class="role-btn active flex-1 py-2.5 rounded-xl text-sm font-bold border" data-role="employee">
+        <i class="fa-solid fa-user text-xs ml-1"></i> موظف
+      </button>
+      <button id="roleManagerBtn" class="role-btn flex-1 py-2.5 rounded-xl text-sm font-bold border" data-role="manager">
+        <i class="fa-solid fa-user-shield text-xs ml-1"></i> مدير
+      </button>
     </div>
 
-    <script>
-        /* ============================================================
-           ⚙️ رابط الـ Web App (الرابط الجديد)
-           ============================================================ */
-        const WEB_APP_URL =
-            'https://script.google.com/macros/s/AKfycbyFUFHqJNsWqipee4mdb95H2cQfCxYH1t59VOYdK8htuHrKRw8rtVIS5zltC0pPAj0/exec';
+    <div id="passwordField" class="hidden mb-4">
+      <label class="text-xs font-bold text-gray-500 mb-1.5 block">كلمة السر</label>
+      <input id="managerPassword" type="password" placeholder="••••••••"
+        class="w-full border border-[var(--border)] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400">
+    </div>
 
-        let CURRENT_ROLE = 'employee';
-        let ALL_DATA = [];
-        let ACTIVE_TIME = 'all';
-        let ACTIVE_QUICK = 'all';
-        let charts = {};
+    <button id="loginBtn" class="w-full bg-[var(--navy)] text-white font-black py-3 rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2">
+      <i class="fa-solid fa-right-to-bracket text-sm" id="loginIcon"></i>
+      <span id="loginBtnText">دخول</span>
+    </button>
 
-        /* ============================================================
-           خرائط الألوان
-           ============================================================ */
-        const CLASS_META = {
-            vip: { color: '#16A34A', emoji: '🔥', label: 'VIP' },
-            warm: { color: '#EA580C', emoji: '🪵', label: 'WARM' },
-            cold: { color: '#EF4444', emoji: '❄️', label: 'COLD' },
-            default: { color: '#94A3B8', emoji: '❔', label: 'غير مصنف' }
-        };
-        const STATUS_META = {
-            nouveau: { color: '#2563EB', emoji: '🆕', label: 'Nouveau' },
-            encours: { color: '#92400E', emoji: '⏳', label: 'En cours' },
-            vendu: { color: '#16A34A', emoji: '✅', label: 'Vendu' },
-            perdu: { color: '#DC2626', emoji: '❌', label: 'Perdu' },
-            default: { color: '#94A3B8', emoji: '—', label: 'غير محدد' }
-        };
-        const PROP_META = {
-            appartement: { color: '#2563EB', emoji: '🏢', label: 'شقة', rowBg: '#EFF6FF', rowBorder: '#93C5FD' },
-            villa: { color: '#B8860B', emoji: '🏰', label: 'فيلا', rowBg: '#FEF9E7', rowBorder: '#E5C158' },
-            local: { color: '#EA580C', emoji: '🏪', label: 'محل تجاري', rowBg: '#FFF3E9', rowBorder: '#F5B27A' },
-            default: { color: '#94A3B8', emoji: '🏠', label: 'غير محدد', rowBg: '#FFFFFF', rowBorder: 'transparent' }
-        };
+    <p id="loginError" class="hidden text-red-500 text-xs text-center mt-3 font-semibold"></p>
+  </div>
+</div>
 
-        const TIME_KEYS = ['all', 'today', 'yesterday', 'last_week', 'last_month'];
-        const TIME_LABELS = { all: 'الكل', today: 'اليوم', yesterday: 'أمس', last_week: 'الأسبوع الماضي', last_month: 'الشهر الماضي' };
+<!-- ===================== الداشبورد ===================== -->
+<div id="dashboardScreen" class="hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
 
-        const QUICK_KEYS = ['all', 'vip', 'warm', 'cold', 'nouveau', 'encours', 'vendu', 'perdu'];
+  <!-- الشريط العلوي -->
+  <header class="pt-6 pb-5">
+    <div class="flex items-center justify-between mb-5">
+      <button id="refreshBtn" class="card w-11 h-11 rounded-full flex items-center justify-center shrink-0" style="color:var(--blue)" title="تحديث">
+        <i class="fa-solid fa-rotate-right text-sm" id="refreshIcon"></i>
+      </button>
+      <div class="text-center">
+        <h1 class="text-2xl sm:text-3xl font-black flex items-center justify-center gap-2" style="color:var(--navy)">
+          <span>📊</span><span>لوحة تحكم العقارات</span>
+        </h1>
+        <p id="roleLabel" class="text-[12px] mt-1 font-bold" style="color:var(--gray)"></p>
+      </div>
+      <button id="logoutBtn" class="card w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-red-500" title="خروج">
+        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+      </button>
+    </div>
+  </header>
 
-        /* ============================================================
-           أدوات التطبيع
-           ============================================================ */
-        function cleanAlpha(raw) {
-            if (!raw) return '';
-            return raw.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(
-                /[^a-z]/g, '');
-        }
+  <!-- الفلاتر والبحث -->
+  <section class="card rounded-2xl p-4 mb-5 space-y-3">
+    <div class="relative">
+      <i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-sm" style="color:#9AA6BF"></i>
+      <input id="searchInput" type="text" placeholder="بحث بالاسم أو الهاتف..."
+        class="w-full bg-[#F8FAFC] border border-[var(--border)] rounded-xl pr-10 pl-4 py-3 text-sm focus:outline-none focus:border-blue-400 transition" style="color:var(--navy)">
+    </div>
 
-        function classKeyFor(raw) {
-            const s = cleanAlpha(raw);
-            if (!s) return 'default';
-            if (s.includes('vip')) return 'vip';
-            if (s.includes('warm')) return 'warm';
-            if (s.includes('cold')) return 'cold';
-            return 'default';
-        }
+    <div>
+      <label class="text-[11px] font-bold mb-1.5 block" style="color:var(--gray)">الفترة الزمنية</label>
+      <select id="timeSelect" class="filter-select w-full bg-[#F8FAFC] border border-[var(--border)] rounded-xl pl-8 pr-3 py-2.5 text-sm font-bold focus:outline-none focus:border-blue-400" style="color:var(--navy)"></select>
+    </div>
 
-        function statusKeyFor(raw) {
-            const s = cleanAlpha(raw);
-            if (s.includes('nouveau') || s.includes('new')) return 'nouveau';
-            if (s.includes('encours') || s.includes('progress')) return 'encours';
-            if (s.includes('vendu') || s.includes('sold')) return 'vendu';
-            if (s.includes('perdu') || s.includes('lost')) return 'perdu';
-            return 'default';
-        }
+    <div>
+      <p class="text-[11px] font-bold mb-2" style="color:var(--gray)">فلتر سريع (التصنيف / الحالة)</p>
+      <div class="scroller flex gap-2 pb-1" id="quickChips"></div>
+    </div>
+  </section>
 
-        function propertyKeyFor(raw) {
-            const s = cleanAlpha(raw);
-            if (s.includes('appartement') || s.includes('apartment')) return 'appartement';
-            if (s.includes('villa')) return 'villa';
-            if (s.includes('local')) return 'local';
-            return 'default';
-        }
+  <!-- خطأ -->
+  <div id="errorBanner" class="hidden bg-red-50 border border-red-200 rounded-2xl px-4 py-4 mb-5 flex items-start gap-3 fade-in">
+    <div class="icon-circle bg-red-100 text-red-500"><i class="fa-solid fa-triangle-exclamation text-sm"></i></div>
+    <span id="errorText" class="text-sm text-red-600 leading-relaxed pt-1.5">تعذر تحميل البيانات.</span>
+  </div>
 
-        // يبحث عن قيمة داخل الـ row بالاعتماد على كلمات مفتاحية فاسم العمود
-        function findField(row, keywords) {
-            const keys = Object.keys(row || {});
-            for (const k of keys) {
-                const nk = k.toString().toLowerCase();
-                if (keywords.some(kw => nk.includes(kw))) return row[k];
-            }
-            return '';
-        }
+  <!-- تحميل -->
+  <div id="loadingState" class="card rounded-2xl p-5 mb-5">
+    <div class="skeleton h-10 w-full rounded-xl mb-2.5"></div>
+    <div class="skeleton h-10 w-full rounded-xl mb-2.5"></div>
+    <div class="skeleton h-10 w-full rounded-xl"></div>
+  </div>
 
-        function normalizeRow(row) {
-            return {
-                date: findField(row, ['date']),
-                name: findField(row, ['nom', 'name']),
-                phone: findField(row, ['telephone', 'téléphone', 'phone']),
-                budget: findField(row, ['budget']),
-                propertyType: findField(row, ['immobilier', 'property type', 'type de bien']),
-                status: findField(row, ['status', 'statut']),
-                classification: findField(row, ['classification'])
-            };
-        }
+  <!-- بطاقة إجمالي العملاء -->
+  <section id="totalCard" class="rounded-2xl p-5 mb-5 hidden fade-in" style="background:#16A34A; box-shadow:0 14px 32px -12px rgba(22,163,74,0.5);">
+    <div class="flex items-center justify-between">
+      <div class="icon-circle" style="background:rgba(255,255,255,0.2); font-size:26px; width:58px; height:58px;">👥</div>
+      <div class="text-right">
+        <p class="text-sm mb-1 font-black text-white">إجمالي العملاء</p>
+        <p class="text-4xl font-black text-white" id="totalCount">0</p>
+      </div>
+    </div>
+  </section>
 
-        function parseDMY(str) {
-            if (!str) return null;
-            const p = String(str).trim().split(/[\/\-]/);
-            if (p.length !== 3) return null;
-            const [d, m, y] = p.map(Number);
-            if (!d || !m || !y) return null;
-            return new Date(y, m - 1, d);
-        }
+  <!-- الرسوم البيانية -->
+  <section id="chartsWrap" class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5 hidden">
+    <div class="card rounded-2xl p-5">
+      <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-fire text-sm" style="color:var(--blue)"></i>التصنيف</h3>
+      <div class="h-60"><canvas id="chartClassification"></canvas></div>
+      <div id="legendClassification" class="mt-4 space-y-2.5"></div>
+    </div>
+    <div class="card rounded-2xl p-5">
+      <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-house text-sm" style="color:var(--blue)"></i>نوع العقار</h3>
+      <div class="h-60"><canvas id="chartPropertyType"></canvas></div>
+      <div id="legendPropertyType" class="mt-4 space-y-2.5"></div>
+    </div>
+    <div class="card rounded-2xl p-5">
+      <h3 class="text-base font-black mb-4 flex items-center gap-2" style="color:var(--navy)"><i class="fa-solid fa-chart-simple text-sm" style="color:var(--blue)"></i>الحالة</h3>
+      <div class="h-60"><canvas id="chartStatus"></canvas></div>
+      <div id="legendStatus" class="mt-4 space-y-2.5"></div>
+    </div>
+  </section>
 
-        function isInTimeRange(dateStr, range) {
-            if (range === 'all') return true;
-            const d = parseDMY(dateStr);
-            if (!d) return false;
-            const now = new Date();
-            const t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            if (range === 'today') return d.getTime() === t0.getTime();
-            if (range === 'yesterday') {
-                const y = new Date(t0);
-                y.setDate(y.getDate() - 1);
-                return d.getTime() === y.getTime();
-            }
-            if (range === 'last_week') {
-                const w = new Date(t0);
-                w.setDate(w.getDate() - 7);
-                return d >= w && d <= t0;
-            }
-            if (range === 'last_month') {
-                const m = new Date(t0);
-                m.setMonth(m.getMonth() - 1);
-                return d >= m && d <= t0;
-            }
-            return true;
-        }
+  <!-- فارغ -->
+  <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center card rounded-2xl mb-5" style="color:var(--gray)">
+    <div class="text-4xl mb-3">🗂️</div>
+    <p class="text-sm font-bold">لا توجد بيانات مطابقة</p>
+  </div>
 
-        function badge(label, emoji, color) {
-            if (!label) return '<span class="text-slate-400">—</span>';
-            return `<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border" style="background:${color}18;color:${color};border-color:${color}44">${emoji||''} ${label}</span>`;
-        }
+  <!-- الجدول -->
+  <section id="tableWrap" class="card rounded-2xl overflow-hidden mb-5 hidden">
+    <div class="px-5 pt-5 pb-3">
+      <h3 class="text-base font-black" style="color:var(--navy)">نظرة عامة على العملاء</h3>
+    </div>
+    <div class="overflow-x-auto max-h-[500px]">
+      <table class="w-full text-xs">
+        <thead>
+          <tr class="text-[10px] border-b" style="border-color:var(--border)">
+            <th class="text-right px-4 py-3 font-black">العميل</th>
+            <th class="text-right px-4 py-3 font-black">الهاتف</th>
+            <th class="text-right px-4 py-3 font-black">الميزانية</th>
+            <th class="text-right px-4 py-3 font-black">النوع</th>
+            <th class="text-right px-4 py-3 font-black">الحالة</th>
+            <th class="text-right px-4 py-3 font-black">التصنيف</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody" class="divide-y" style="border-color:var(--border)"></tbody>
+      </table>
+    </div>
+  </section>
 
-        function initialsOf(name) {
-            if (!name) return '?';
-            const parts = name.toString().trim().split(/\s+/);
-            return (parts[0]?.[0] || '') + (parts[1]?.[0] || '');
-        }
+  <footer class="text-center text-[11px] pt-2" style="color:#9AA6BF">
+    لوحة تحكم العقارات — البيانات متزامنة مع Google Sheets
+  </footer>
+</div>
 
-        /* ============================================================
-           تسجيل الدخول
-           ============================================================ */
-        document.getElementById('roleEmployeeBtn').addEventListener('click', () => selectRole('employee'));
-        document.getElementById('roleManagerBtn').addEventListener('click', () => selectRole('manager'));
+<script>
+/* ============================================================
+   ⚙️ رابط الـ Web App
+   ============================================================ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxigyTQZOUXhLNm_qb90Fy_v3DDXJELkZ-sjfvxRFGW6GKMKtzjfdCDqAbbaOx96A/exec';
 
-        function selectRole(role) {
-            CURRENT_ROLE = role;
-            document.getElementById('roleEmployeeBtn').classList.toggle('active', role === 'employee');
-            document.getElementById('roleManagerBtn').classList.toggle('active', role === 'manager');
-            document.getElementById('passwordField').classList.toggle('hidden', role === 'employee');
-        }
+let CURRENT_ROLE = 'employee';
+let ALL_DATA = [];
+let ACTIVE_TIME = 'all';
+let ACTIVE_QUICK = 'all';
+let charts = {};
 
-        document.getElementById('loginBtn').addEventListener('click', async () => {
-            const errorEl = document.getElementById('loginError');
-            const btnText = document.getElementById('loginBtnText');
-            const icon = document.getElementById('loginIcon');
-            errorEl.classList.add('hidden');
+/* ============================================================
+   خرائط الألوان
+   ============================================================ */
+const CLASS_META = {
+  vip:  { color:'#16A34A', emoji:'🔥', label:'VIP' },
+  warm: { color:'#EA580C', emoji:'🪵', label:'WARM' },
+  cold: { color:'#EF4444', emoji:'❄️', label:'COLD' },
+  default: { color:'#94A3B8', emoji:'❔', label:'غير مصنف' }
+};
+const STATUS_META = {
+  nouveau:  { color:'#2563EB', emoji:'🆕', label:'Nouveau' },
+  encours:  { color:'#92400E', emoji:'⏳', label:'En cours' },
+  vendu:    { color:'#16A34A', emoji:'✅', label:'Vendu' },
+  perdu:    { color:'#DC2626', emoji:'❌', label:'Perdu' },
+  default:  { color:'#94A3B8', emoji:'—', label:'غير محدد' }
+};
+const PROP_META = {
+  appartement: { color:'#2563EB', emoji:'🏢', label:'شقة', rowBg:'#EFF6FF', rowBorder:'#93C5FD' },
+  villa:       { color:'#B8860B', emoji:'🏰', label:'فيلا', rowBg:'#FEF9E7', rowBorder:'#E5C158' },
+  local:       { color:'#EA580C', emoji:'🏪', label:'محل تجاري', rowBg:'#FFF3E9', rowBorder:'#F5B27A' },
+  default: { color:'#94A3B8', emoji:'🏠', label:'غير محدد', rowBg:'#FFFFFF', rowBorder:'transparent' }
+};
 
-            const password = document.getElementById('managerPassword').value;
-            btnText.textContent = 'جارِ التحقق...';
-            icon.classList.add('fa-spin');
-            icon.classList.remove('fa-right-to-bracket');
-            icon.classList.add('fa-spinner');
+const TIME_KEYS = ['all','today','yesterday','last_week','last_month'];
+const TIME_LABELS = { all:'الكل', today:'اليوم', yesterday:'أمس', last_week:'الأسبوع الماضي', last_month:'الشهر الماضي' };
 
-            try {
-                const params = new URLSearchParams({ action: 'login', role: CURRENT_ROLE });
-                if (CURRENT_ROLE === 'manager') params.set('password', password);
+const QUICK_KEYS = ['all','vip','warm','cold','nouveau','encours','vendu','perdu'];
 
-                const res = await fetch(WEB_APP_URL + '?' + params.toString());
-                const json = await res.json();
+/* ============================================================
+   أدوات التطبيع
+   ============================================================ */
+function cleanAlpha(raw){
+  if(!raw) return '';
+  return raw.toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,'');
+}
+function classKeyFor(raw){
+  const s = cleanAlpha(raw);
+  if(!s) return 'default';
+  if(s.includes('vip')) return 'vip';
+  if(s.includes('warm')) return 'warm';
+  if(s.includes('cold')) return 'cold';
+  return 'default';
+}
+function statusKeyFor(raw){
+  const s = cleanAlpha(raw);
+  if(s.includes('nouveau')||s.includes('new')) return 'nouveau';
+  if(s.includes('encours')||s.includes('progress')) return 'encours';
+  if(s.includes('vendu')||s.includes('sold')) return 'vendu';
+  if(s.includes('perdu')||s.includes('lost')) return 'perdu';
+  return 'default';
+}
+function propertyKeyFor(raw){
+  const s = cleanAlpha(raw);
+  if(s.includes('appartement')||s.includes('apartment')) return 'appartement';
+  if(s.includes('villa')) return 'villa';
+  if(s.includes('local')) return 'local';
+  return 'default';
+}
 
-                if (!json.success) {
-                    errorEl.textContent = json.error || 'فشل تسجيل الدخول';
-                    errorEl.classList.remove('hidden');
-                    return;
-                }
+// يبحث عن قيمة داخل الـ row بالاعتماد على كلمات مفتاحية فاسم العمود
+function findField(row, keywords){
+  const keys = Object.keys(row || {});
+  for (const k of keys){
+    const nk = k.toString().toLowerCase();
+    if (keywords.some(kw => nk.includes(kw))) return row[k];
+  }
+  return '';
+}
 
-                enterDashboard();
+function normalizeRow(row){
+  return {
+    date: findField(row, ['date']),
+    name: findField(row, ['nom', 'name']),
+    phone: findField(row, ['telephone','téléphone','phone']),
+    budget: findField(row, ['budget']),
+    propertyType: findField(row, ['immobilier','property type','type de bien']),
+    status: findField(row, ['status','statut']),
+    classification: findField(row, ['classification'])
+  };
+}
 
-            } catch (err) {
-                errorEl.textContent = 'تعذر الاتصال بالخادم: ' + err.message;
-                errorEl.classList.remove('hidden');
-            } finally {
-                btnText.textContent = 'دخول';
-                icon.classList.remove('fa-spin', 'fa-spinner');
-                icon.classList.add('fa-right-to-bracket');
-            }
-        });
+function parseDMY(str){
+  if(!str) return null;
+  const p = String(str).trim().split(/[\/\-]/);
+  if(p.length!==3) return null;
+  const [d,m,y]=p.map(Number);
+  if(!d||!m||!y) return null;
+  return new Date(y,m-1,d);
+}
+function isInTimeRange(dateStr, range){
+  if(range==='all') return true;
+  const d = parseDMY(dateStr);
+  if(!d) return false;
+  const now = new Date();
+  const t0 = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  if(range==='today') return d.getTime()===t0.getTime();
+  if(range==='yesterday'){ const y=new Date(t0); y.setDate(y.getDate()-1); return d.getTime()===y.getTime(); }
+  if(range==='last_week'){ const w=new Date(t0); w.setDate(w.getDate()-7); return d>=w && d<=t0; }
+  if(range==='last_month'){ const m=new Date(t0); m.setMonth(m.getMonth()-1); return d>=m && d<=t0; }
+  return true;
+}
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            CURRENT_ROLE = 'employee';
-            document.getElementById('managerPassword').value = '';
-            selectRole('employee');
-            document.getElementById('dashboardScreen').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-        });
+function badge(label, emoji, color){
+  if(!label) return '<span class="text-slate-400">—</span>';
+  return `<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border" style="background:${color}18;color:${color};border-color:${color}44">${emoji||''} ${label}</span>`;
+}
+function initialsOf(name){
+  if(!name) return '?';
+  const parts = name.toString().trim().split(/\s+/);
+  return (parts[0]?.[0]||'') + (parts[1]?.[0]||'');
+}
 
-        function enterDashboard() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('dashboardScreen').classList.remove('hidden');
-            document.getElementById('roleLabel').textContent = CURRENT_ROLE === 'manager' ?
-                'متصل كـ: المدير 👑' :
-                'متصل كـ: موظف';
-            renderTimeSelect();
-            renderQuickChips();
-            loadData();
-        }
+/* ============================================================
+   تسجيل الدخول
+   ============================================================ */
+document.getElementById('roleEmployeeBtn').addEventListener('click', ()=>selectRole('employee'));
+document.getElementById('roleManagerBtn').addEventListener('click', ()=>selectRole('manager'));
 
-        /* ============================================================
-           الفلاتر
-           ============================================================ */
-        function renderTimeSelect() {
-            const sel = document.getElementById('timeSelect');
-            sel.innerHTML = TIME_KEYS.map(k => `<option value="${k}">${TIME_LABELS[k]}</option>`).join('');
-            sel.value = ACTIVE_TIME;
-            sel.addEventListener('change', e => {
-                ACTIVE_TIME = e.target.value;
-                applyFilters();
-            });
-        }
+function selectRole(role){
+  CURRENT_ROLE = role;
+  document.getElementById('roleEmployeeBtn').classList.toggle('active', role==='employee');
+  document.getElementById('roleManagerBtn').classList.toggle('active', role==='manager');
+  document.getElementById('passwordField').classList.toggle('hidden', role==='employee');
+}
 
-        function renderQuickChips() {
-            const container = document.getElementById('quickChips');
-            container.innerHTML = QUICK_KEYS.map(k => {
-                if (k === 'all') return chipHtml(k, 'الكل', '🔎', '#94A3B8');
-                const meta = CLASS_META[k] || STATUS_META[k];
-                return chipHtml(k, meta.label, meta.emoji, meta.color);
-            }).join('');
-            container.querySelectorAll('button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    ACTIVE_QUICK = btn.dataset.key;
-                    renderQuickChips();
-                    applyFilters();
-                });
-            });
-        }
+document.getElementById('loginBtn').addEventListener('click', async ()=>{
+  const errorEl = document.getElementById('loginError');
+  const btnText = document.getElementById('loginBtnText');
+  const icon = document.getElementById('loginIcon');
+  errorEl.classList.add('hidden');
 
-        function chipHtml(key, label, emoji, color) {
-            const active = key === ACTIVE_QUICK;
-            const style = active ?
-                `background:${color}22;border-color:${color};color:${color}` :
-                `background:#fff;border-color:var(--border);color:var(--gray)`;
-            return `<button data-key="${key}" class="chip rounded-full px-3.5 py-2 text-[11px] font-bold border flex items-center gap-1.5" style="${style}">${emoji} ${label}</button>`;
-        }
+  const password = document.getElementById('managerPassword').value;
+  btnText.textContent = 'جارِ التحقق...';
+  icon.classList.add('fa-spin');
+  icon.classList.remove('fa-right-to-bracket');
+  icon.classList.add('fa-spinner');
 
-        /* ============================================================
-           الإحصائيات والرسوم
-           ============================================================ */
-        function renderTotal(data) {
-            document.getElementById('totalCount').textContent = data.length;
-            document.getElementById('totalCard').classList.remove('hidden');
-        }
+  try{
+    const params = new URLSearchParams({ action:'login', role:CURRENT_ROLE });
+    if(CURRENT_ROLE==='manager') params.set('password', password);
 
-        function buildDonut(canvasId, labels, values, colors) {
-            const ctx = document.getElementById(canvasId);
-            if (!ctx) return;
-            if (charts[canvasId]) charts[canvasId].destroy();
-            const total = values.reduce((a, b) => a + b, 0) || 1;
+    const res = await fetch(WEB_APP_URL + '?' + params.toString());
+    const json = await res.json();
 
-            charts[canvasId] = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels,
-                    datasets: [{
-                        data: values,
-                        backgroundColor: colors,
-                        borderColor: '#FFFFFF',
-                        borderWidth: 3,
-                        hoverOffset: 8
-                    }]
-                },
-                plugins: [ChartDataLabels],
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '58%',
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            rtl: true,
-                            bodyFont: { family: 'Tajawal' },
-                            titleFont: { family: 'Tajawal' },
-                            callbacks: {
-                                label: c => c.label + ': ' + c.raw + ' (' + Math.round((c.raw / total) *
-                                    100) + '%)'
-                            }
-                        },
-                        datalabels: {
-                            color: '#fff',
-                            font: { family: 'Tajawal', weight: 'bold', size: 12 },
-                            formatter: v => {
-                                const p = Math.round((v / total) * 100);
-                                return p > 0 ? p + '%' : '';
-                            }
-                        }
-                    }
-                }
-            });
-        }
+    if(!json.success){
+      errorEl.textContent = json.error || 'فشل تسجيل الدخول';
+      errorEl.classList.remove('hidden');
+      return;
+    }
 
-        function renderLegend(containerId, entries) {
-            const total = entries.reduce((s, e) => s + e.value, 0) || 1;
-            document.getElementById(containerId).innerHTML = entries.map(e => {
-                const pct = Math.round((e.value / total) * 100);
-                return `<div class="flex items-center justify-between text-xs">
-                    <span style="color:var(--gray)">(${pct}%) ${e.value}</span>
-                    <span class="flex items-center gap-2 font-bold" style="color:var(--navy)">${e.label} <span class="w-2.5 h-2.5 rounded-full" style="background:${e.color}"></span></span>
-                </div>`;
-            }).join('');
-        }
+    enterDashboard();
 
-        function renderCharts(data) {
-            document.getElementById('chartsWrap').classList.remove('hidden');
+  } catch(err){
+    errorEl.textContent = 'تعذر الاتصال بالخادم: ' + err.message;
+    errorEl.classList.remove('hidden');
+  } finally {
+    btnText.textContent = 'دخول';
+    icon.classList.remove('fa-spin','fa-spinner');
+    icon.classList.add('fa-right-to-bracket');
+  }
+});
 
-            const clsCounts = {};
-            data.forEach(d => {
-                const k = classKeyFor(d.classification);
-                clsCounts[k] = (clsCounts[k] || 0) + 1;
-            });
-            let clsEntries = Object.keys(clsCounts).map(k => ({
-                value: clsCounts[k],
-                label: (CLASS_META[k] || CLASS_META.default).label,
-                color: (CLASS_META[k] || CLASS_META.default).color
-            }));
-            if (!clsEntries.length) clsEntries = [{ value: 1, label: 'لا توجد بيانات', color: '#E2E8F5' }];
-            buildDonut('chartClassification', clsEntries.map(e => e.label), clsEntries.map(e => e.value),
-                clsEntries.map(e => e.color));
-            renderLegend('legendClassification', clsEntries);
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  CURRENT_ROLE = 'employee';
+  document.getElementById('managerPassword').value = '';
+  selectRole('employee');
+  document.getElementById('dashboardScreen').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+});
 
-            const propCounts = {};
-            data.forEach(d => {
-                const k = propertyKeyFor(d.propertyType);
-                propCounts[k] = (propCounts[k] || 0) + 1;
-            });
-            let propEntries = Object.keys(propCounts).map(k => ({
-                value: propCounts[k],
-                label: (PROP_META[k] || PROP_META.default).label,
-                color: (PROP_META[k] || PROP_META.default).color
-            }));
-            if (!propEntries.length) propEntries = [{ value: 1, label: 'لا توجد بيانات', color: '#E2E8F5' }];
-            buildDonut('chartPropertyType', propEntries.map(e => e.label), propEntries.map(e => e.value),
-                propEntries.map(e => e.color));
-            renderLegend('legendPropertyType', propEntries);
+function enterDashboard(){
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('dashboardScreen').classList.remove('hidden');
+  document.getElementById('roleLabel').textContent = CURRENT_ROLE==='manager' ? 'متصل كـ: المدير 👑' : 'متصل كـ: موظف';
+  renderTimeSelect();
+  renderQuickChips();
+  loadData();
+}
 
-            const statCounts = {};
-            data.forEach(d => {
-                const k = statusKeyFor(d.status);
-                statCounts[k] = (statCounts[k] || 0) + 1;
-            });
-            let statEntries = Object.keys(statCounts).map(k => ({
-                value: statCounts[k],
-                label: (STATUS_META[k] || STATUS_META.default).label,
-                color: (STATUS_META[k] || STATUS_META.default).color
-            }));
-            if (!statEntries.length) statEntries = [{ value: 1, label: 'لا توجد بيانات', color: '#E2E8F5' }];
-            buildDonut('chartStatus', statEntries.map(e => e.label), statEntries.map(e => e.value),
-                statEntries.map(e => e.color));
-            renderLegend('legendStatus', statEntries);
-        }
+/* ============================================================
+   الفلاتر
+   ============================================================ */
+function renderTimeSelect(){
+  const sel = document.getElementById('timeSelect');
+  sel.innerHTML = TIME_KEYS.map(k=>`<option value="${k}">${TIME_LABELS[k]}</option>`).join('');
+  sel.value = ACTIVE_TIME;
+  sel.addEventListener('change', e=>{ ACTIVE_TIME = e.target.value; applyFilters(); });
+}
 
-        /* ============================================================
-           الجدول
-           ============================================================ */
-        function renderTable(data) {
-            const wrap = document.getElementById('tableWrap');
-            const empty = document.getElementById('emptyState');
+function renderQuickChips(){
+  const container = document.getElementById('quickChips');
+  container.innerHTML = QUICK_KEYS.map(k=>{
+    if(k==='all') return chipHtml(k,'الكل','🔎','#94A3B8');
+    const meta = CLASS_META[k] || STATUS_META[k];
+    return chipHtml(k, meta.label, meta.emoji, meta.color);
+  }).join('');
+  container.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ ACTIVE_QUICK = btn.dataset.key; renderQuickChips(); applyFilters(); });
+  });
+}
+function chipHtml(key,label,emoji,color){
+  const active = key===ACTIVE_QUICK;
+  const style = active ? `background:${color}22;border-color:${color};color:${color}` : `background:#fff;border-color:var(--border);color:var(--gray)`;
+  return `<button data-key="${key}" class="chip rounded-full px-3.5 py-2 text-[11px] font-bold border flex items-center gap-1.5" style="${style}">${emoji} ${label}</button>`;
+}
 
-            if (!data.length) {
-                wrap.classList.add('hidden');
-                empty.classList.remove('hidden');
-                empty.classList.add('flex');
-                return;
-            }
-            empty.classList.add('hidden');
-            empty.classList.remove('flex');
-            wrap.classList.remove('hidden');
+/* ============================================================
+   الإحصائيات والرسوم
+   ============================================================ */
+function renderTotal(data){
+  document.getElementById('totalCount').textContent = data.length;
+  document.getElementById('totalCard').classList.remove('hidden');
+}
 
-            document.getElementById('tableBody').innerHTML = data.map(d => {
-                const prop = PROP_META[propertyKeyFor(d.propertyType)] || PROP_META.default;
-                const stat = STATUS_META[statusKeyFor(d.status)] || STATUS_META.default;
-                const cls = CLASS_META[classKeyFor(d.classification)] || CLASS_META.default;
+function buildDonut(canvasId, labels, values, colors){
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  if(charts[canvasId]) charts[canvasId].destroy();
+  const total = values.reduce((a,b)=>a+b,0) || 1;
 
-                return `<tr class="fade-in" style="background:${prop.rowBg}; border-right:4px solid ${prop.rowBorder}">
-                    <td class="px-4 py-3 whitespace-nowrap">
-                        <div class="flex items-center gap-2">
-                            <div class="avatar-circle" style="background:${prop.color}">${initialsOf(d.name)}</div>
-                            <span class="font-bold" style="color:var(--navy)">${d.name||'—'}</span>
-                        </div>
-                    </td>
-                    <td class="px-4 py-3 whitespace-nowrap" style="color:var(--gray)" dir="ltr">${d.phone||'—'}</td>
-                    <td class="px-4 py-3 whitespace-nowrap" style="color:var(--navy-soft)">${d.budget||'—'}</td>
-                    <td class="px-4 py-3 whitespace-nowrap">${prop.emoji} ${prop.label}</td>
-                    <td class="px-4 py-3 whitespace-nowrap">${badge(stat.label, stat.emoji, stat.color)}</td>
-                    <td class="px-4 py-3 whitespace-nowrap">${badge(cls.label, cls.emoji, cls.color)}</td>
-                </tr>`;
-            }).join('');
-        }
+  charts[canvasId] = new Chart(ctx, {
+    type:'doughnut',
+    data:{ labels, datasets:[{ data:values, backgroundColor:colors, borderColor:'#FFFFFF', borderWidth:3, hoverOffset:8 }] },
+    plugins:[ChartDataLabels],
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'58%',
+      plugins:{
+        legend:{ display:false },
+        tooltip:{ rtl:true, bodyFont:{family:'Tajawal'}, titleFont:{family:'Tajawal'},
+          callbacks:{ label:c => c.label + ': ' + c.raw + ' (' + Math.round((c.raw/total)*100) + '%)' } },
+        datalabels:{ color:'#fff', font:{family:'Tajawal', weight:'bold', size:12},
+          formatter: v => { const p = Math.round((v/total)*100); return p>0 ? p+'%' : ''; } }
+      }
+    }
+  });
+}
+function renderLegend(containerId, entries){
+  const total = entries.reduce((s,e)=>s+e.value,0) || 1;
+  document.getElementById(containerId).innerHTML = entries.map(e=>{
+    const pct = Math.round((e.value/total)*100);
+    return `<div class="flex items-center justify-between text-xs">
+      <span style="color:var(--gray)">(${pct}%) ${e.value}</span>
+      <span class="flex items-center gap-2 font-bold" style="color:var(--navy)">${e.label} <span class="w-2.5 h-2.5 rounded-full" style="background:${e.color}"></span></span>
+    </div>`;
+  }).join('');
+}
 
-        /* ============================================================
-           الفلترة العامة
-           ============================================================ */
-        function applyFilters() {
-            const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-            let filtered = ALL_DATA.filter(d => isInTimeRange(d.date, ACTIVE_TIME));
+function renderCharts(data){
+  document.getElementById('chartsWrap').classList.remove('hidden');
 
-            if (ACTIVE_QUICK !== 'all') {
-                filtered = filtered.filter(d => classKeyFor(d.classification) === ACTIVE_QUICK || statusKeyFor(d
-                    .status) === ACTIVE_QUICK);
-            }
-            if (q) {
-                filtered = filtered.filter(d => (d.name || '').toString().toLowerCase().includes(q) || (d.phone || '')
-                    .toString().toLowerCase().includes(q));
-            }
+  const clsCounts = {};
+  data.forEach(d=>{ const k = classKeyFor(d.classification); clsCounts[k]=(clsCounts[k]||0)+1; });
+  let clsEntries = Object.keys(clsCounts).map(k=>({ value:clsCounts[k], label:(CLASS_META[k]||CLASS_META.default).label, color:(CLASS_META[k]||CLASS_META.default).color }));
+  if(!clsEntries.length) clsEntries=[{value:1,label:'لا توجد بيانات',color:'#E2E8F5'}];
+  buildDonut('chartClassification', clsEntries.map(e=>e.label), clsEntries.map(e=>e.value), clsEntries.map(e=>e.color));
+  renderLegend('legendClassification', clsEntries);
 
-            renderTotal(filtered);
-            renderCharts(filtered);
-            renderTable(filtered);
-        }
+  const propCounts = {};
+  data.forEach(d=>{ const k = propertyKeyFor(d.propertyType); propCounts[k]=(propCounts[k]||0)+1; });
+  let propEntries = Object.keys(propCounts).map(k=>({ value:propCounts[k], label:(PROP_META[k]||PROP_META.default).label, color:(PROP_META[k]||PROP_META.default).color }));
+  if(!propEntries.length) propEntries=[{value:1,label:'لا توجد بيانات',color:'#E2E8F5'}];
+  buildDonut('chartPropertyType', propEntries.map(e=>e.label), propEntries.map(e=>e.value), propEntries.map(e=>e.color));
+  renderLegend('legendPropertyType', propEntries);
 
-        /* ============================================================
-           جلب البيانات
-           ============================================================ */
-        async function loadData() {
-            const loading = document.getElementById('loadingState');
-            const errorBanner = document.getElementById('errorBanner');
-            const refreshIcon = document.getElementById('refreshIcon');
+  const statCounts = {};
+  data.forEach(d=>{ const k = statusKeyFor(d.status); statCounts[k]=(statCounts[k]||0)+1; });
+  let statEntries = Object.keys(statCounts).map(k=>({ value:statCounts[k], label:(STATUS_META[k]||STATUS_META.default).label, color:(STATUS_META[k]||STATUS_META.default).color }));
+  if(!statEntries.length) statEntries=[{value:1,label:'لا توجد بيانات',color:'#E2E8F5'}];
+  buildDonut('chartStatus', statEntries.map(e=>e.label), statEntries.map(e=>e.value), statEntries.map(e=>e.color));
+  renderLegend('legendStatus', statEntries);
+}
 
-            loading.classList.remove('hidden');
-            errorBanner.classList.add('hidden');
-            refreshIcon.classList.add('fa-spin');
+/* ============================================================
+   الجدول
+   ============================================================ */
+function renderTable(data){
+  const wrap = document.getElementById('tableWrap');
+  const empty = document.getElementById('emptyState');
 
-            try {
-                const res = await fetch(WEB_APP_URL + '?action=getEmployeeData');
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                const json = await res.json();
+  if(!data.length){
+    wrap.classList.add('hidden');
+    empty.classList.remove('hidden'); empty.classList.add('flex');
+    return;
+  }
+  empty.classList.add('hidden'); empty.classList.remove('flex');
+  wrap.classList.remove('hidden');
 
-                if (!json.success) throw new Error(json.error || 'خطأ غير معروف من الخادم');
+  document.getElementById('tableBody').innerHTML = data.map(d=>{
+    const prop = PROP_META[propertyKeyFor(d.propertyType)] || PROP_META.default;
+    const stat = STATUS_META[statusKeyFor(d.status)] || STATUS_META.default;
+    const cls  = CLASS_META[classKeyFor(d.classification)] || CLASS_META.default;
 
-                const rawRows = (json.data && json.data.Database) ? json.data.Database : [];
-                ALL_DATA = rawRows.map(normalizeRow).filter(r => r.name && String(r.name).trim() !== '');
+    return `<tr class="fade-in" style="background:${prop.rowBg}; border-right:4px solid ${prop.rowBorder}">
+      <td class="px-4 py-3 whitespace-nowrap">
+        <div class="flex items-center gap-2">
+          <div class="avatar-circle" style="background:${prop.color}">${initialsOf(d.name)}</div>
+          <span class="font-bold" style="color:var(--navy)">${d.name||'—'}</span>
+        </div>
+      </td>
+      <td class="px-4 py-3 whitespace-nowrap" style="color:var(--gray)" dir="ltr">${d.phone||'—'}</td>
+      <td class="px-4 py-3 whitespace-nowrap" style="color:var(--navy-soft)">${d.budget||'—'}</td>
+      <td class="px-4 py-3 whitespace-nowrap">${prop.emoji} ${prop.label}</td>
+      <td class="px-4 py-3 whitespace-nowrap">${badge(stat.label, stat.emoji, stat.color)}</td>
+      <td class="px-4 py-3 whitespace-nowrap">${badge(cls.label, cls.emoji, cls.color)}</td>
+    </tr>`;
+  }).join('');
+}
 
-                if (!ALL_DATA.length) {
-                    errorBanner.classList.remove('hidden');
-                    document.getElementById('errorText').textContent =
-                        'تم الاتصال بنجاح، لكن لم يتم العثور على بيانات في ورقة "Database".';
-                }
+/* ============================================================
+   الفلترة العامة
+   ============================================================ */
+function applyFilters(){
+  const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  let filtered = ALL_DATA.filter(d => isInTimeRange(d.date, ACTIVE_TIME));
 
-                applyFilters();
+  if(ACTIVE_QUICK !== 'all'){
+    filtered = filtered.filter(d => classKeyFor(d.classification)===ACTIVE_QUICK || statusKeyFor(d.status)===ACTIVE_QUICK);
+  }
+  if(q){
+    filtered = filtered.filter(d => (d.name||'').toString().toLowerCase().includes(q) || (d.phone||'').toString().toLowerCase().includes(q));
+  }
 
-            } catch (err) {
-                errorBanner.classList.remove('hidden');
-                document.getElementById('errorText').textContent = 'تعذر تحميل البيانات: ' + err.message;
-                console.error('Dashboard load error:', err);
-            } finally {
-                loading.classList.add('hidden');
-                refreshIcon.classList.remove('fa-spin');
-            }
-        }
+  renderTotal(filtered);
+  renderCharts(filtered);
+  renderTable(filtered);
+}
 
-        document.getElementById('searchInput').addEventListener('input', applyFilters);
-        document.getElementById('refreshBtn').addEventListener('click', loadData);
-    </script>
+/* ============================================================
+   جلب البيانات
+   ============================================================ */
+async function loadData(){
+  const loading = document.getElementById('loadingState');
+  const errorBanner = document.getElementById('errorBanner');
+  const refreshIcon = document.getElementById('refreshIcon');
+
+  loading.classList.remove('hidden');
+  errorBanner.classList.add('hidden');
+  refreshIcon.classList.add('fa-spin');
+
+  try{
+    const res = await fetch(WEB_APP_URL + '?action=getEmployeeData');
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+
+    if(!json.success) throw new Error(json.error || 'خطأ غير معروف من الخادم');
+
+    const rawRows = (json.data && json.data.Database) ? json.data.Database : [];
+    ALL_DATA = rawRows.map(normalizeRow).filter(r => r.name && String(r.name).trim() !== '');
+
+    if(!ALL_DATA.length){
+      errorBanner.classList.remove('hidden');
+      document.getElementById('errorText').textContent = 'تم الاتصال بنجاح، لكن لم يتم العثور على بيانات في ورقة "Database".';
+    }
+
+    applyFilters();
+
+  } catch(err){
+    errorBanner.classList.remove('hidden');
+    document.getElementById('errorText').textContent = 'تعذر تحميل البيانات: ' + err.message;
+    console.error('Dashboard load error:', err);
+  } finally {
+    loading.classList.add('hidden');
+    refreshIcon.classList.remove('fa-spin');
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('refreshBtn').addEventListener('click', loadData);
+</script>
 </body>
 </html>
